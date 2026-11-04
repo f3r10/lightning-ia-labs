@@ -33,6 +33,21 @@ The class creates the budget in Alby. For a path with no real money we need a wa
 - **An MCP error is not always a budget refusal.** A broken relay also makes `pay_invoice` fail. So the check looks for the code `QUOTA_EXCEEDED`, not for any error.
 - **Pinning.** `npx @getalby/mcp@1.1.2` pins only the top package, and its dependencies can still change. So the lab installs it with a lockfile and runs it from `node_modules`.
 
+## Lab 2
+
+- **No extension is simply called "webshop" in the LNbits catalog.** The class script lists a web shop. The catalog has `tpos`, `inventory`, `orders`, `events`, `lnticket`, `offlineshop`, `nostrmarket` and `shipping`. `nostrmarket` is the closest to a web shop. Its description is "Nostr Webshop/market on LNbits".
+- **Each LNbits instance has one funding source.** Lab 1 uses the customer node and Lab 2 uses the shop node, so each lab runs its own LNbits container.
+- **Regtest cannot be public.** The class script says "publish". On regtest, the store runs on your own computer. A public store needs a public network.
+- **moneydevkit networks.** Its public docs do not state the networks. Its repository documents staging on signet (Mutinynet), selected with `MDK_NETWORK=signet` and other `MDK_*` variables in `STAGING-TESTING.md`. Mainnet is the default.
+- **moneydevkit custody.** Its docs say "We never have access to your funds". The merchant holds `MDK_MNEMONIC`, and the node runs on the merchant's own hosting. moneydevkit's nodes provide the channels and inbound liquidity.
+- **moneydevkit credentials need a person.** `@moneydevkit/create` shows a device code, and someone must click Authorize in a browser.
+- **moneydevkit webhooks need a public address.** Its service calls your app to claim paid invoices, so local tests need a tunnel. Its own guide uses ngrok.
+- **The 2% fee is not in moneydevkit's docs pages we read.** We found it only in a founder's public discussion. Confirm it before class.
+
+## Testing with `claude -p`
+
+- **`claude -p` can stay attached to a server that the agent started.** The store worked after about 30 seconds, but the command did not return. This affected only our automated test.
+
 ## Lab 4 warning (found during Lab 1 research)
 
 - **`fetch_l402` in `@getalby/mcp` 1.1.2 refuses non-public addresses.** `assertPublicUrl` blocks `localhost` and private IPs. A local regtest API cannot be fetched directly with this tool.

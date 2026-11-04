@@ -20,3 +20,11 @@ Everything below was checked on **2026-11-04**. Tools change quickly, so check a
 | `@getalby/sdk` | 9.0.0 | Used by the check. The MCP server has its own copy, version 5.1.2. |
 | `@modelcontextprotocol/sdk` | 1.32.2 | Used by the reference solution. |
 | Alby Hub | v1.24.4 | Evaluated from its source only. Not used. See `GOTCHAS.md`. |
+
+## Lab 2
+
+| Tool | Version | Notes |
+| --- | --- | --- |
+| LNbits extensions | `tpos` 1.6.1, `events` 1.6.9, `inventory` 0.3.1, `orders` 0.1.0 | Exact catalog versions that work with LNbits 1.6.2. |
+| `node` image | 22.21.1-alpine, `sha256:0340fa682d72068edf603c305bfbc10e23219fb0e40df58d9ea4d6f33a9798bf` | Runs the reference store. |
+| `@moneydevkit/nextjs`, `@moneydevkit/create`, `@moneydevkit/core` | 0.22.0 | Published 2026-08-10. Not yet tested end to end. |

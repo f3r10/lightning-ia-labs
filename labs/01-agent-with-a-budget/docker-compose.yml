@@ -1,0 +1,35 @@
+# The Lab 1 wallet: LNbits, funded by the customer node of infra/regtest.
+name: lnlabs-lab1
+
+services:
+  lnbits-agent:
+    image: lnbits/lnbits:v1.6.2@sha256:284b9c2a0df9a1f867b4c52b694699fccade513c09368879922ff90bc7bf850e
+    restart: unless-stopped
+    environment:
+      LNBITS_ADMIN_UI: "true"
+      AUTH_HTTPS_ONLY: "false"
+      LNBITS_BACKEND_WALLET_CLASS: LndRestWallet
+      LND_REST_ENDPOINT: https://lnd-customer:8080/
+      LND_REST_CERT: /lnd/tls.cert
+      LND_REST_MACAROON: /lnd/data/chain/bitcoin/regtest/admin.macaroon
+      LNBITS_DATA_FOLDER: /app/data
+      HOST: 0.0.0.0
+      PORT: "5000"
+    ports:
+      - "127.0.0.1:5001:5000"
+    volumes:
+      - lnbits-agent:/app/data
+      - lnd-customer:/lnd:ro
+    networks: [regtest]
+
+networks:
+  regtest:
+    external: true
+    name: lnlabs-regtest
+
+volumes:
+  lnbits-agent:
+    name: lnlabs-lnbits-agent
+  lnd-customer:
+    external: true
+    name: lnlabs-lnd-customer

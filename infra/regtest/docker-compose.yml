@@ -1,0 +1,108 @@
+# Shared regtest stack for all labs. Regtest is a private test network: its coins have no value.
+# Images are pinned by tag and digest. See docs/VERSIONS.md.
+name: lnlabs
+
+x-lnd: &lnd
+  image: lightninglabs/lnd:v0.21.6-beta@sha256:54b3c87ad0bc3fea3fab8af23ace6421147ea97e6b56bf3911592d7853c185b8
+  restart: unless-stopped
+  depends_on:
+    bitcoind:
+      condition: service_healthy
+  networks: [regtest]
+
+services:
+  bitcoind:
+    image: bitcoin/bitcoin:31.2@sha256:e1311441eb589e69588060cc7cc0868bc999ab1f359160d7c31fd6d16862a92d
+    restart: unless-stopped
+    command:
+      - -regtest=1
+      - -server=1
+      - -txindex=1
+      - -fallbackfee=0.0002
+      - -rpcbind=0.0.0.0
+      - -rpcallowip=0.0.0.0/0
+      - -rpcuser=regtest
+      - -rpcpassword=regtest
+      - -zmqpubrawblock=tcp://0.0.0.0:28332
+      - -zmqpubrawtx=tcp://0.0.0.0:28333
+    volumes:
+      - bitcoind:/home/bitcoin/.bitcoin
+    healthcheck:
+      test: ["CMD", "bitcoin-cli", "-regtest", "-rpcuser=regtest", "-rpcpassword=regtest", "getblockchaininfo"]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+    networks: [regtest]
+
+  lnd-shop:
+    <<: *lnd
+    hostname: lnd-shop
+    command: &lndflags
+      - --noseedbackup
+      - --bitcoin.regtest
+      - --bitcoin.node=bitcoind
+      - --bitcoind.rpchost=bitcoind:18443
+      - --bitcoind.rpcuser=regtest
+      - --bitcoind.rpcpass=regtest
+      - --bitcoind.zmqpubrawblock=tcp://bitcoind:28332
+      - --bitcoind.zmqpubrawtx=tcp://bitcoind:28333
+      - --rpclisten=0.0.0.0:10009
+      - --restlisten=0.0.0.0:8080
+      - --listen=0.0.0.0:9735
+      - --tlsextradomain=lnd-shop
+      - --tlsextradomain=lnd-customer
+      - --alias=shop
+    volumes:
+      - lnd-shop:/root/.lnd
+
+  lnd-customer:
+    <<: *lnd
+    hostname: lnd-customer
+    command:
+      - --noseedbackup
+      - --bitcoin.regtest
+      - --bitcoin.node=bitcoind
+      - --bitcoind.rpchost=bitcoind:18443
+      - --bitcoind.rpcuser=regtest
+      - --bitcoind.rpcpass=regtest
+      - --bitcoind.zmqpubrawblock=tcp://bitcoind:28332
+      - --bitcoind.zmqpubrawtx=tcp://bitcoind:28333
+      - --rpclisten=0.0.0.0:10009
+      - --restlisten=0.0.0.0:8080
+      - --listen=0.0.0.0:9735
+      - --tlsextradomain=lnd-shop
+      - --tlsextradomain=lnd-customer
+      - --alias=customer
+    volumes:
+      - lnd-customer:/root/.lnd
+
+  # A Nostr relay carries NWC messages between the agent and the wallet.
+  relay:
+    image: dockurr/strfry:1.1.3@sha256:599ab3500dbfbe6cb78c668e1892cd9802c192d066df4660e8e3175034a8344d
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:7777:7777"
+    volumes:
+      - relay:/app/strfry-db
+      # The image's default config only accepts a fixed list of authors. This one accepts all, for local tests.
+      - ./strfry.conf:/etc/strfry.conf:ro
+    healthcheck:
+      test: ["CMD", "curl", "-ILfSs", "http://localhost:7777/"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    networks: [regtest]
+
+networks:
+  regtest:
+    name: lnlabs-regtest
+
+volumes:
+  bitcoind:
+    name: lnlabs-bitcoind
+  relay:
+    name: lnlabs-relay
+  lnd-shop:
+    name: lnlabs-lnd-shop
+  lnd-customer:
+    name: lnlabs-lnd-customer

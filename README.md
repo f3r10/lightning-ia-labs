@@ -38,8 +38,13 @@ make help
 | Lab | Class | What you do |
 | --- | --- | --- |
 | [Lab 1: Agent with a budget](labs/01-agent-with-a-budget/README.md) | 1 | Connect your agent to a wallet, and see the wallet refuse a payment above the budget |
+| [Lab 2: Sell](labs/02-sell/README.md) | 2 | Build a store that marks an order as paid only after the invoice settles |
 
 More labs are added here as each one passes its check from a clean clone.
+
+## To explore
+
+- [Lightning Ecommerce](https://github.com/f3r10/lightning-ecommerce): an idea from the course author, still in development.
 
 ## Security
 

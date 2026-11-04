@@ -1,0 +1,52 @@
+# The Lab 2 wallet: LNbits, funded by the shop node of infra/regtest.
+name: lnlabs-lab2
+
+services:
+  lnbits-shop:
+    image: lnbits/lnbits:v1.6.2@sha256:284b9c2a0df9a1f867b4c52b694699fccade513c09368879922ff90bc7bf850e
+    restart: unless-stopped
+    environment:
+      LNBITS_ADMIN_UI: "true"
+      AUTH_HTTPS_ONLY: "false"
+      LNBITS_BACKEND_WALLET_CLASS: LndRestWallet
+      LND_REST_ENDPOINT: https://lnd-shop:8080/
+      LND_REST_CERT: /lnd/tls.cert
+      LND_REST_MACAROON: /lnd/data/chain/bitcoin/regtest/admin.macaroon
+      LNBITS_DATA_FOLDER: /app/data
+      HOST: 0.0.0.0
+      PORT: "5000"
+    ports:
+      - "127.0.0.1:5002:5000"
+    volumes:
+      - lnbits-shop:/app/data
+      - lnd-shop:/lnd:ro
+    networks: [regtest]
+
+  # The reference solution. Start it with: make lab2-solution
+  store-solution:
+    profiles: [solution]
+    image: node:22.21.1-alpine@sha256:0340fa682d72068edf603c305bfbc10e23219fb0e40df58d9ea4d6f33a9798bf
+    restart: unless-stopped
+    working_dir: /store
+    command: ["node", "server.mjs"]
+    environment:
+      LNBITS_URL: http://lnbits-shop:5000
+      LNBITS_INVOICE_KEY: ${LNBITS_INVOICE_KEY:?Run make up-lab2 first}
+      PORT: "3002"
+    ports:
+      - "127.0.0.1:3002:3002"
+    volumes:
+      - ./solution/store:/store:ro
+    networks: [regtest]
+
+networks:
+  regtest:
+    external: true
+    name: lnlabs-regtest
+
+volumes:
+  lnbits-shop:
+    name: lnlabs-lnbits-shop
+  lnd-shop:
+    external: true
+    name: lnlabs-lnd-shop

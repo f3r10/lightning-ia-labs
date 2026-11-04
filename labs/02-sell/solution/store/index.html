@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab Store</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 34rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
+  button { padding: .5rem 1rem; margin-right: .5rem; cursor: pointer; }
+  textarea { width: 100%; height: 7rem; font-family: monospace; }
+  #status { font-weight: 700; }
+</style>
+</head>
+<body>
+<h1>Lab Store</h1>
+<p>Choose a product. Your order is paid only when the invoice settles.</p>
+<div id="products"></div>
+<section id="order" hidden>
+  <h2>Your order</h2>
+  <p>Amount: <span id="amount"></span> sats</p>
+  <p>Status: <span id="status"></span></p>
+  <label for="invoice">Invoice</label>
+  <textarea id="invoice" readonly></textarea>
+</section>
+<script>
+const $ = (id) => document.getElementById(id);
+let timer;
+
+async function buy(item) {
+  clearInterval(timer);
+  const res = await fetch("/api/orders", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ item }),
+  });
+  const order = await res.json();
+  show(order);
+  timer = setInterval(async () => {
+    const latest = await (await fetch(`/api/orders/${order.id}`)).json();
+    show(latest);
+    if (latest.status === "paid") clearInterval(timer);
+  }, 1000);
+}
+
+function show(order) {
+  $("order").hidden = false;
+  $("amount").textContent = order.amountSats;
+  $("status").textContent = order.status;
+  $("invoice").value = order.bolt11;
+}
+
+fetch("/api/products").then((r) => r.json()).then((products) => {
+  for (const [id, product] of Object.entries(products)) {
+    const button = document.createElement("button");
+    button.textContent = `${product.name}: ${product.priceSats} sats`;
+    button.onclick = () => buy(id);
+    $("products").append(button);
+  }
+});
+</script>
+</body>
+</html>

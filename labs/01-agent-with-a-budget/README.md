@@ -113,9 +113,9 @@ OK: the wallet "agent-wallet" has 20000 sats.
 
    ✅ The agent reports the error `The wallet has exceeded its spending quota.` The wallet has enough sats, but the budget does not allow this payment. The model did not decide this: the wallet did.
 
-7. **Optional: see the connection in the wallet.** Open http://127.0.0.1:5001 and log in. The user and password are in `labs/01-agent-with-a-budget/.env`. Open the extension "NWC Service Provider" and look at the connection and its budget.
+7. **Optional: see the connection in the wallet.** Open http://127.0.0.1:5001 and log in. The user and password are in `labs/01-agent-with-a-budget/.env`. In the left menu, click "NWC Service Provider". If a dialog says "Important!", click "I understand". Then choose `agent-wallet` in the Wallet list.
 
-   ✅ You see the connection and the budget in the wallet page.
+   ✅ You see your connection, "Lab 1 agent, budget 1000 sats", in the table.
 
 ### Optional: a real Alby wallet (real money)
 

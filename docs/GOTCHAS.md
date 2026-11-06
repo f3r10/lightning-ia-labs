@@ -44,6 +44,22 @@ The class creates the budget in Alby. For a path with no real money we need a wa
 - **moneydevkit webhooks need a public address.** Its service calls your app to claim paid invoices, so local tests need a tunnel. Its own guide uses ngrok.
 - **The 2% fee is not in moneydevkit's docs pages we read.** We found it only in a founder's public discussion. Confirm it before class.
 
+## Lab 3a: Breez SDK and its test network
+
+- **Breez's regtest has no Lightning.** It is run by Lightspark, free, and needs no API key. Breez's testing guide says to test Lightning send and receive on mainnet with small amounts. So Lab 3a receives test sats on regtest, and Lightning receive is an optional mainnet step.
+- **Breez's local Spark setup is not public.** `regtest/local` in `breez/spark-sdk` builds its operators from `ghcr.io/breez/spark-operator`, which needs authentication.
+- **open-ssp on MutinyNet did not work with Breez SDK (tested 2026-11-06).** With `@breeztech/breez-sdk-spark` 0.28.0 on signet, a wallet connected and created a real invoice. A faucet payment of 20,000 sats arrived, and its preimage matched. But every claim failed with `consensus claim transfer failed ... refund transaction validation`, and wallet sync failed with `Something went wrong`.
+- **open-ssp's Breez fork has no signet.** The pinned commit (`benthecarman/spark-sdk` `2472fdc0`) accepts only `mainnet` and `regtest`. Using `regtest` with the MutinyNet config never saw the payment, and the operators answered `service rate limit exceeded`. The fork's `signet` branch (`b5c4ace6`) lacks open-ssp's fixes. open-ssp's note about MutinyNet seems to refer to a fork of Spark's JavaScript SDK instead.
+- **open-ssp is still interesting** for a future lab about Spark itself. See `docs/slide-briefs/lab-03-breez-decision.md`.
+- **The MutinyNet faucet's API needs a GitHub-login token.** Only its web page works without setup.
+
+## Lab 2b: moneydevkit surprises
+
+- **`@moneydevkit/create` 0.22.0 ignores `--no-clipboard` and `--no-open`.** It copied the secrets to the clipboard and did not print the authorization link.
+- **Its Next.js setup step fails.** The error is `ENOENT ... @moneydevkit/create/template`, because the published package has no template folder. Add the files by hand, as the docs show.
+- **Cloudflare quick tunnels expire.** Ours stopped after a few hours with `Tunnel not found`, and every new tunnel gets a new address. moneydevkit must then be told the new address.
+- **`create-next-app` took 9.6 minutes on our test machine.** Do it before class.
+
 ## Testing with `claude -p`
 
 - **`claude -p` can stay attached to a server that the agent started.** The store worked after about 30 seconds, but the command did not return. This affected only our automated test.

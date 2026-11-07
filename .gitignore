@@ -8,3 +8,6 @@ node_modules/
 *.log
 .DS_Store
 labs/02-sell/my-store/
+
+# Slide briefs for the course slides: kept local only
+docs/slide-briefs/

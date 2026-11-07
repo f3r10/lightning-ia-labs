@@ -52,7 +52,7 @@ The class creates the budget in Alby. For a path with no real money we need a wa
 - **Breez's local Spark setup is not public.** `regtest/local` in `breez/spark-sdk` builds its operators from `ghcr.io/breez/spark-operator`, which needs authentication.
 - **open-ssp on MutinyNet did not work with Breez SDK (tested 2026-11-06).** With `@breeztech/breez-sdk-spark` 0.28.0 on signet, a wallet connected and created a real invoice. A faucet payment of 20,000 sats arrived, and its preimage matched. But every claim failed with `consensus claim transfer failed ... refund transaction validation`, and wallet sync failed with `Something went wrong`.
 - **open-ssp's Breez fork has no signet.** The pinned commit (`benthecarman/spark-sdk` `2472fdc0`) accepts only `mainnet` and `regtest`. Using `regtest` with the MutinyNet config never saw the payment, and the operators answered `service rate limit exceeded`. The fork's `signet` branch (`b5c4ace6`) lacks open-ssp's fixes. open-ssp's note about MutinyNet seems to refer to a fork of Spark's JavaScript SDK instead.
-- **open-ssp is still interesting** for a future lab about Spark itself. See `docs/slide-briefs/lab-03-breez-decision.md`.
+- **open-ssp is still interesting** for a future lab about Spark itself.
 - **The MutinyNet faucet's API needs a GitHub-login token.** Only its web page works without setup.
 
 ## Lab 2b: moneydevkit surprises

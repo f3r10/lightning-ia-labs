@@ -20,6 +20,30 @@ Some words used in this lab:
 - **Settle:** a Lightning invoice settles when the payment is final and the receiver has the money.
 - **Environment variable:** a value that a program reads when it starts. It is not part of the code.
 
+### First: who opens the channel?
+
+To receive a Lightning payment, you need **inbound liquidity**: a channel with funds on the other side. A new merchant has no channels, so at first nobody can pay them.
+
+A **Lightning Service Provider (LSP)** solves this. An LSP is a well-connected node that opens channels to its customers.
+
+With **LSPS2**, a *just-in-time channel*, the merchant needs no funds beforehand:
+
+```
+Customer --pays--> LSP --opens a new channel and forwards the payment, minus its fee--> Merchant
+```
+
+1. The merchant creates an invoice that goes through the LSP.
+2. The first payment reaches the LSP.
+3. The LSP opens a channel to the merchant right then, keeps its fee from that payment and forwards the rest.
+
+LSPS2 is an open standard, [bLIP-52](https://github.com/lightning/blips/blob/master/blip-0052.md).
+
+**moneydevkit uses LSPS4**, a variant of just-in-time channels, with its own LSP. LSPS4 is a [draft](https://github.com/ZmnSCPxj-jr/lsp/blob/db0e99e8b65641a18c2d9b9fdf22c2dbae2af32d/LSPS4/ephemeral.md), not an official standard. The moneydevkit SDK handles it for you: you do not configure anything for liquidity.
+
+**The LNbits path in this lab does not use an LSP.** On regtest, the channel between the customer node and the shop node is already open when you run `make up`.
+
+### The two paths
+
 There are two paths:
 
 - **2a, LNbits:** the main path, on regtest. It is required.

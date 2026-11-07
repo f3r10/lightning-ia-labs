@@ -42,7 +42,9 @@ The class creates the budget in Alby. For a path with no real money we need a wa
 - **moneydevkit custody.** Its docs say "We never have access to your funds". The merchant holds `MDK_MNEMONIC`, and the node runs on the merchant's own hosting. moneydevkit's nodes provide the channels and inbound liquidity.
 - **moneydevkit credentials need a person.** `@moneydevkit/create` shows a device code, and someone must click Authorize in a browser.
 - **moneydevkit webhooks need a public address.** Its service calls your app to claim paid invoices, so local tests need a tunnel. Its own guide uses ngrok.
-- **The 2% fee is not in moneydevkit's docs pages we read.** We found it only in a founder's public discussion. Confirm it before class.
+- **The 2% beta fee is on moneydevkit's own site,** although the docs pages we read do not mention it.
+- **moneydevkit uses LSPS4 with its own LSP (checked in code).** `@moneydevkit/lightning-js` (0.1.87, the version `@moneydevkit/nextjs` 0.22.0 installs) builds its forked ldk-node with `set_liquidity_source_lsps4`, and creates invoices with `receive_via_lsps4_jit_channel`. The LSP is `lsp.moneydevkit.com:9735` on mainnet and `lsp.staging.moneydevkit.com:9735` on signet. The student configures nothing for liquidity; signet staging only needs `MDK_LSP_NODE_ID` and `MDK_LSP_ADDRESS`. A background task moves idle on-chain funds into the largest LSP channel after one channel closes and a new one opens.
+- **The only public LSPS4 document is a draft,** the "Ephemeral SCIDs" page in `ZmnSCPxj-jr/lsp`.
 
 ## Lab 3a: Breez SDK and its test network
 

@@ -27,4 +27,8 @@ Everything below was checked on **2026-11-04**. Tools change quickly, so check a
 | --- | --- | --- |
 | LNbits extensions | `tpos` 1.6.1, `events` 1.6.9, `inventory` 0.3.1, `orders` 0.1.0 | Exact catalog versions that work with LNbits 1.6.2. |
 | `node` image | 22.21.1-alpine, `sha256:0340fa682d72068edf603c305bfbc10e23219fb0e40df58d9ea4d6f33a9798bf` | Runs the reference store. |
-| `@moneydevkit/nextjs`, `@moneydevkit/create`, `@moneydevkit/core` | 0.22.0 | Published 2026-08-10. Not yet tested end to end. |
+| `@moneydevkit/nextjs`, `@moneydevkit/create`, `@moneydevkit/core` | 0.22.0 | Published 2026-08-10. Tested on signet staging: checkout, webhook signature and order status work; payment failed (see `GOTCHAS.md`). |
+| `@moneydevkit/lightning-js` | 0.1.87 | Installed by `@moneydevkit/nextjs` 0.22.0. Uses LSPS4 through a forked ldk-node. |
+| `standardwebhooks` | 1.1.1 | Verifies moneydevkit's webhook signatures. |
+| Next.js (`create-next-app`) | 16.4.5 | With React 19.3.0. Creating an app took 9.6 minutes on our test machine. |
+| Vercel CLI (`vercel`) | 65.12.1 | Used to link, set environment variables and deploy. |

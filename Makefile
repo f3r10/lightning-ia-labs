@@ -9,7 +9,7 @@ LAB2 := docker compose --env-file $(LAB2_DIR)/.env -f $(LAB2_DIR)/docker-compose
 .DEFAULT_GOAL := help
 .PHONY: help up down reset status logs mine pay invoice \
 	up-lab1 down-lab1 check-lab1 lab1-connection lab1-invoices lab1-simulate lab1-mcp-config lab1-mcp-claude-code \
-	up-lab2 down-lab2 check-lab2 lab2-solution
+	up-lab2 down-lab2 check-lab2 check-lab2b lab2-solution
 
 help: ## Show this list
 	@grep -hE '^[a-zA-Z0-9_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  make %-22s %s\n", $$1, $$2}'
@@ -88,3 +88,6 @@ lab2-solution: ## Start the reference store on http://127.0.0.1:3002
 
 check-lab2: ## Check whether Lab 2a worked
 	@$(LAB2_DIR)/check.sh
+
+check-lab2b: ## Check your deployed moneydevkit store. Example: make check-lab2b STORE_URL=https://you.vercel.app ENV_FILE=path/.env.local
+	@node $(LAB2_DIR)/scripts/check-2b.mjs "$(STORE_URL)" "$(ENV_FILE)"

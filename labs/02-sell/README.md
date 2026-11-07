@@ -47,7 +47,7 @@ LSPS2 is an open standard, [bLIP-52](https://github.com/lightning/blips/blob/mas
 There are two paths:
 
 - **2a, LNbits:** the main path, on regtest. It is required.
-- **2b, moneydevkit:** a second path that needs an account. It is optional.
+- **2b, moneydevkit:** a second path, built only with prompts and published on Vercel. It needs a moneydevkit account and a Vercel account. See [moneydevkit.md](moneydevkit.md).
 
 ## Before class
 

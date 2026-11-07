@@ -59,7 +59,13 @@ The class creates the budget in Alby. For a path with no real money we need a wa
 
 - **`@moneydevkit/create` 0.22.0 ignores `--no-clipboard` and `--no-open`.** It copied the secrets to the clipboard and did not print the authorization link.
 - **Its Next.js setup step fails.** The error is `ENOENT ... @moneydevkit/create/template`, because the published package has no template folder. Add the files by hand, as the docs show.
-- **Cloudflare quick tunnels expire.** Ours stopped after a few hours with `Tunnel not found`, and every new tunnel gets a new address. moneydevkit must then be told the new address.
+- **Cloudflare quick tunnels expire.** Ours stopped after a few hours with `Tunnel not found`, and every new tunnel gets a new address. moneydevkit must then be told the new address. So Lab 2b publishes the store on Vercel instead, at an address that does not change.
+- **Saving orders to a file does not work on Vercel,** because a deployment's files do not persist. The Lab 2b store reads order status from moneydevkit (`getCheckout`), and fulfills orders in the signed webhook.
+- **The checkout page from moneydevkit's docs fails to build with Cache Components.** The error is `Error occurred prerendering page "/checkout/[id]"`. The app from `create-next-app` 16.4.5 plus moneydevkit's plugin config has `cacheComponents: true`. The fix is to render the component that reads `params` inside `<Suspense>`.
+- **moneydevkit has two kinds of webhook.** The app's webhook address (set by `@moneydevkit/create --webhook-url`) is where moneydevkit wakes the store's node: it posts to `ADDRESS/api/mdk`. A separate endpoint, added in the dashboard, receives signed `checkout.completed` events. If the first one points to an old address, creating a checkout fails with `Merchant webhook did not respond within the spin-up window`.
+- **Vercel reads new environment variables only on a new deployment.** After adding `MDK_WEBHOOK_SECRET`, deploy again.
+- **`vercel link` adds `VERCEL_OIDC_TOKEN` to `.env.local`.** It does not remove other lines.
+- **Payments on signet staging failed (tested 2026-11-07).** The store's node registered with the staging LSP through LSPS4 (`[LSPS4 Client] register_node ... from peer 03fd9a37...` in the Vercel logs). The invoice carried a route hint through that LSP (`cumulo-mutinynet`), which has direct channels to the MutinyNet faucet's node. But paying from the faucet failed twice with `FailureReasonNoRoute`, and the LSP never called the store's `/api/mdk` to open the channel. The cause is outside the app. Mainnet was not tested.
 - **`create-next-app` took 9.6 minutes on our test machine.** Do it before class.
 
 ## Testing with `claude -p`

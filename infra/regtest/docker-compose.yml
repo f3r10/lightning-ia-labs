@@ -19,6 +19,9 @@ services:
       - -server=1
       - -txindex=1
       - -fallbackfee=0.0002
+      # Regtest only makes blocks when we ask. Without this, a chain whose last block is
+      # over a day old counts as "still downloading", and LND waits forever.
+      - -maxtipage=315360000
       - -rpcbind=0.0.0.0
       - -rpcallowip=0.0.0.0/0
       - -rpcuser=regtest

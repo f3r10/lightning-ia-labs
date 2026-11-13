@@ -17,6 +17,9 @@ if ! btc listwallets | grep -q '"miner"'; then
 fi
 HEIGHT="$(btc getblockcount)"
 if [ "$HEIGHT" -lt 110 ]; then mine $((110 - HEIGHT)); fi
+# LND only counts as synced when the newest block is recent. On a chain made days ago,
+# it would wait forever, so always mine one fresh block. On regtest this costs nothing.
+mine 1
 
 echo "3/5 Waiting for the shop and customer nodes..."
 wait_for "the shop node to sync" 120 synced shop

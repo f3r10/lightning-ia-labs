@@ -192,6 +192,8 @@ The check cannot see whether your agent tried the large invoice. Only your agent
 | `no info event (kind 13194) returned from relay` | The wallet is not connected to the relay. Run `make up-lab1`, then try again. |
 | `The wallet has exceeded its spending quota` on the small invoice | You used the budget. Run `make lab1-connection BUDGET=1000`, connect the agent again (step 2) and run `make lab1-invoices`. |
 | `FAIL The small invoice ... is not paid`, but you paid it | You created new invoices after paying. Pay the new small invoice. |
+| `timed out ... waiting for: the shop node to sync` | Update your copy with `git pull`, then run `make up-lab1` again. Older copies could not restart a chain that was left for a day. |
+| You have two copies of this repository | They share the same Docker containers. Run `make down` in the other copy first. |
 | Anything else | Run `make reset`, then start this lab again. |
 
 ## Clean up

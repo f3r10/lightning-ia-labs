@@ -62,11 +62,11 @@ lab1-connection: ## Create an NWC connection with a budget. Example: make lab1-c
 lab1-invoices: ## Create the small and the large invoice on the shop node
 	@node $(LAB1_DIR)/scripts/make-invoices.mjs
 
-lab1-mcp-claude-code: ## Connect the wallet to Claude Code through the Alby MCP server
-	@node $(LAB1_DIR)/scripts/connect-mcp.mjs claude-code
+lab1-mcp-claude-code: ## Connect the wallet to Claude Code. Optional: NAME=alby-live (default: alby-lab1)
+	@node $(LAB1_DIR)/scripts/connect-mcp.mjs claude-code "$(or $(NAME),alby-lab1)"
 
-lab1-mcp-config: ## Write an MCP config file for Claude Desktop or another MCP client
-	@node $(LAB1_DIR)/scripts/connect-mcp.mjs config
+lab1-mcp-config: ## Write an MCP config file for Claude Desktop or another client. Optional: NAME=...
+	@node $(LAB1_DIR)/scripts/connect-mcp.mjs config "$(or $(NAME),alby-lab1)"
 
 lab1-simulate: ## Reference solution: run the exercise without a model
 	@node $(LAB1_DIR)/solution/simulated-agent.mjs

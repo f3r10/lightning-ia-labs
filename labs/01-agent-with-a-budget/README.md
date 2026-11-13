@@ -81,7 +81,7 @@ OK: the wallet "agent-wallet" has 20000 sats.
    make lab1-mcp-config
    ```
 
-   This writes `labs/01-agent-with-a-budget/.state/mcp-config.json`. Copy its `alby-lab1` entry into `mcpServers` in Claude Desktop's `claude_desktop_config.json`. Find that file in Claude Desktop under Settings, Developer, Edit Config. Then restart Claude Desktop.
+   This writes `labs/01-agent-with-a-budget/.state/mcp-config-alby-lab1.json`. Copy its `alby-lab1` entry into `mcpServers` in Claude Desktop's `claude_desktop_config.json`. Find that file in Claude Desktop under Settings, Developer, Edit Config. Then restart Claude Desktop.
 
    **Any other MCP client:** run `make lab1-mcp-config` and add the same entry to your client's MCP settings. The entry has this shape:
 
@@ -97,7 +97,15 @@ OK: the wallet "agent-wallet" has 20000 sats.
    }
    ```
 
-   ✅ Your agent lists the server `alby-lab1` and tools such as `get_balance` and `pay_invoice`.
+   **Already have a server named `alby-lab1`?** The helper replaces a server with the same name. To keep both, choose another name:
+
+   ```bash
+   make lab1-mcp-claude-code NAME=alby-class1
+   ```
+
+   Then use that name instead of `alby-lab1` in the prompts below.
+
+   ✅ Your agent lists the server `alby-lab1` (or your NAME) and tools such as `get_balance` and `pay_invoice`.
 
 3. **Ask your agent for the balance.** Use the first prompt below.
 
@@ -128,7 +136,13 @@ OK: the wallet "agent-wallet" has 20000 sats.
 This path is not needed to pass the lab. It uses real sats, so keep the amounts tiny.
 
 1. In your Alby account or Alby Hub, create a new app connection with a budget of at most 1,000 sats.
-2. Add it to your agent as in step 2, using your own connection string.
+2. Add it to your agent under its own name, so it does not replace the lab's wallet. In Claude Code:
+
+   ```bash
+   claude mcp add --scope user alby-real --env NWC_CONNECTION_STRING=YOUR_CONNECTION_STRING -- npx -y @getalby/mcp@1.1.2
+   ```
+
+   Type this in your own terminal, not in a chat with your agent, because the connection string is a secret.
 3. Repeat steps 3, 5 and 6 with invoices that you create in another wallet. The large invoice must be above the budget.
 
 `make check-lab1` does not cover this path, because it can only see the local wallet.

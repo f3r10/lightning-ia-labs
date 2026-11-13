@@ -107,7 +107,7 @@ OK: the wallet "agent-wallet" has 20000 sats.
 
    ✅ Your agent lists the server `alby-lab1` (or your NAME) and tools such as `get_balance` and `pay_invoice`.
 
-3. **Ask your agent for the balance.** Use the first prompt below.
+3. **Ask your agent for the balance.** Use [Prompt 1: check the balance](#prompt-1-check-the-balance).
 
    ✅ The agent reports about 20,000 sats. The balance is higher than the budget. That matters later.
 
@@ -119,11 +119,11 @@ OK: the wallet "agent-wallet" has 20000 sats.
 
    ✅ You see one SMALL invoice (100 sats) and one LARGE invoice (5,000 sats).
 
-5. **Ask your agent to pay the small invoice.** Use the second prompt below.
+5. **Ask your agent to pay the small invoice.** Use [Prompt 2: pay the small invoice](#prompt-2-pay-the-small-invoice).
 
    ✅ The agent reports a preimage. A preimage is the proof of payment.
 
-6. **Ask your agent to pay the large invoice.** Use the third prompt below.
+6. **Ask your agent to pay the large invoice.** Use [Prompt 3: pay the large invoice](#prompt-3-pay-the-large-invoice).
 
    ✅ The agent reports the error `The wallet has exceeded its spending quota.` The wallet has enough sats, but the budget does not allow this payment. The model did not decide this: the wallet did.
 
@@ -149,14 +149,18 @@ This path is not needed to pass the lab. It uses real sats, so keep the amounts 
 
 ## Prompts for your agent
 
-Check the balance:
+If you chose another server name in step 2, write that name instead of `alby-lab1`.
+
+### Prompt 1: check the balance
 
 ```text
 Use the alby-lab1 MCP tools. Call get_balance and tell me the wallet balance in sats.
 Do not read any .env file, and do not ask me for the connection string.
 ```
 
-Pay the small invoice (replace `PASTE_SMALL_INVOICE` with the invoice):
+### Prompt 2: pay the small invoice
+
+Replace `PASTE_SMALL_INVOICE` with the SMALL invoice from step 4.
 
 ```text
 Use the alby-lab1 MCP tools to pay this test invoice with pay_invoice: PASTE_SMALL_INVOICE
@@ -164,7 +168,9 @@ Report what the tool returned.
 Do not read any .env file, and do not ask me for the connection string.
 ```
 
-Pay the large invoice (replace `PASTE_LARGE_INVOICE` with the invoice):
+### Prompt 3: pay the large invoice
+
+Replace `PASTE_LARGE_INVOICE` with the LARGE invoice from step 4.
 
 ```text
 Use the alby-lab1 MCP tools to pay this test invoice with pay_invoice: PASTE_LARGE_INVOICE
@@ -172,7 +178,9 @@ Report exactly what the tool returned. If the wallet refuses, do not retry and d
 Do not read any .env file, and do not ask me for the connection string.
 ```
 
-Explore (optional). The agent should read the server's documentation first:
+### Prompt 4 (optional): explore the tools
+
+The agent should read the server's documentation first.
 
 ```text
 Read https://github.com/getAlby/mcp and list the tools of the alby-lab1 server.

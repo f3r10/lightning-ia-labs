@@ -78,7 +78,7 @@ OK: the wallet "shop-wallet" is ready, and its invoice key is saved in labs/02-s
 
    ✅ In the left menu you see the wallet `shop-wallet` and the extensions TPoS, Events, Inventory and Orders.
 
-2. **Ask your agent to build the store.** Use the first prompt below. Your agent should create `labs/02-sell/my-store` and start it on port 3002.
+2. **Ask your agent to build the store.** Use [Prompt 1: build the store](#prompt-1-build-the-store). Your agent should create `labs/02-sell/my-store` and start it on port 3002.
 
    ✅ http://127.0.0.1:3002 shows your products.
 
@@ -112,7 +112,7 @@ See [moneydevkit.md](moneydevkit.md).
 
 ## Prompts for your agent
 
-Build the store:
+### Prompt 1: build the store
 
 ```text
 Read the LNbits API documentation at http://127.0.0.1:5002/docs. You need these two calls:
@@ -140,7 +140,7 @@ Rules:
 Start the server in the background when you finish. Then tell me to run: make check-lab2
 ```
 
-Change it into your own project:
+### Prompt 2 (optional): make it your own project
 
 ```text
 Change the store in labs/02-sell/my-store to sell MY_PRODUCT_IDEA. Keep the routes and the rules the same.

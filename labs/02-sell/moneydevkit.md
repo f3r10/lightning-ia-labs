@@ -77,11 +77,11 @@ git check-ignore .env.local
 
 In our test (2026-11-07), a real agent followed prompts 1 to 3 in about 4 minutes in total: 102 seconds to build, 79 to publish and 29 to deploy again. The dashboard step and a purchase add a few more minutes, so this fits the 27-minute build segment, as long as the before-class steps are done.
 
-1. **Build the store.** Give your agent the first prompt below.
+1. **Build the store.** Use [Prompt 1: build the store](#prompt-1-build-the-store).
 
    ✅ `npm run dev` starts, and http://localhost:3000 shows a "Buy" button.
 
-2. **Publish it.** Give your agent the second prompt.
+2. **Publish it.** Use [Prompt 2: publish on Vercel](#prompt-2-publish-on-vercel).
 
    ✅ YOUR_URL shows your store. The agent reports HTTP 200 for "/". A 500 from `/api/webhooks/mdk` is expected now: its secret comes in the next step.
 
@@ -90,7 +90,7 @@ In our test (2026-11-07), a real agent followed prompts 1 to 3 in about 4 minute
    - Under Webhooks, add the endpoint `YOUR_URL/api/webhooks/mdk` for the event `checkout.completed`.
    - Copy its signing secret (it starts with `whsec_`). In Vercel, open your project, then Settings, then Environment Variables. Add `MDK_WEBHOOK_SECRET` with that value, for Production.
 
-   Then give your agent the third prompt.
+   Then use [Prompt 3: deploy again after the secret](#prompt-3-deploy-again-after-the-secret).
 
    ✅ The agent reports that the webhook answers `401 Invalid signature` to an unsigned message.
 
@@ -112,7 +112,7 @@ In our test (2026-11-07), a real agent followed prompts 1 to 3 in about 4 minute
 
 ## Prompts for your agent
 
-**Prompt 1: build the store.**
+### Prompt 1: build the store
 
 ```text
 Read the moneydevkit Next.js guide at https://docs.moneydevkit.com/nextjs.md and its webhook guide at https://docs.moneydevkit.com/webhooks.md.
@@ -134,7 +134,7 @@ Rules:
 Run npm run build at the end and fix any error.
 ```
 
-**Prompt 2: publish on Vercel.**
+### Prompt 2: publish on Vercel
 
 ```text
 Publish this app on Vercel with the Vercel CLI, version 65.12.1 (npx vercel@65.12.1).
@@ -145,14 +145,16 @@ Publish this app on Vercel with the Vercel CLI, version 65.12.1 (npx vercel@65.1
 Do not change any code in this step.
 ```
 
-**Prompt 3: after you add MDK_WEBHOOK_SECRET in Vercel.**
+### Prompt 3: deploy again after the secret
+
+Use it after you add `MDK_WEBHOOK_SECRET` in Vercel (step 3).
 
 ```text
 I added MDK_WEBHOOK_SECRET in Vercel. Deploy to production again with npx vercel@65.12.1 deploy --prod --yes.
 Then send a POST with the body {} to /api/webhooks/mdk on the production address, and tell me the status. It should be 401.
 ```
 
-**Prompt 4: change it into your own project (optional).**
+### Prompt 4 (optional): make it your own project
 
 ```text
 Change the store to sell MY_PRODUCT_IDEA. Keep all the routes and rules the same.

@@ -33,6 +33,7 @@ The class creates the budget in Alby. For a path with no real money we need a wa
 - **`@getalby/sdk` 9 changed its exports.** `import { nwc } from "@getalby/sdk"` fails. Use `import { NWCClient } from "@getalby/sdk"`.
 - **NIP-04 warning.** The SDK prints `NIP-04 encryption is about to be deprecated`, because this version of the extension does not offer NIP-44. It works today. Check it again before each edition.
 - **An MCP error is not always a budget refusal.** A broken relay also makes `pay_invoice` fail. So the check looks for the code `QUOTA_EXCEEDED`, not for any error.
+- **Use the `node` on the PATH in MCP configs.** `process.execPath` gives the versioned folder Node.js runs from (for example `/opt/homebrew/Cellar/node/26.9.0/bin/node` on a Mac with Homebrew). That folder disappears when Node.js is updated, and the MCP server stops starting. The helper now saves the path that `command -v node` finds, such as `/opt/homebrew/bin/node`.
 - **Pinning.** `npx @getalby/mcp@1.1.2` pins only the top package, and its dependencies can still change. So the lab installs it with a lockfile and runs it from `node_modules`.
 
 ## Lab 2

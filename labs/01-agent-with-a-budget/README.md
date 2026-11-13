@@ -67,7 +67,13 @@ OK: the wallet "agent-wallet" has 20000 sats.
    make lab1-mcp-claude-code
    ```
 
-   Restart Claude Code and type `/mcp`.
+   Check that Claude Code can start the server:
+
+   ```bash
+   claude mcp list
+   ```
+
+   ✅ The list has a line that starts with `alby-lab1:` and ends with `✔ Connected`. Then restart Claude Code, or open a new session, and type `/mcp` to see its tools.
 
    **Claude Desktop:**
 

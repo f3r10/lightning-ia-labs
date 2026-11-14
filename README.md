@@ -9,6 +9,7 @@ You do not need to be a software engineer. You build with your own coding agent,
 - Docker Desktop, or Docker Engine with Compose v2
 - git
 - Node.js 20 or newer
+- [just](https://just.systems), a command runner. On a Mac: `brew install just`. On Linux or WSL: see https://just.systems/man/en/packages.html
 - your coding agent, such as Claude Code
 
 On Windows, run everything inside WSL 2.
@@ -18,20 +19,20 @@ On Windows, run everything inside WSL 2.
 ```bash
 git clone https://github.com/f3r10/lightning-ia-labs.git
 cd lightning-ia-labs
-make up
-make help
+just up
+just
 ```
 
-`make up` starts a private test network called **regtest**. Its coins have no value. It runs Bitcoin Core, two Lightning nodes (a "shop" and a "customer"), an open channel between them, and a relay.
+`just up` starts a private test network called **regtest**. Its coins have no value. It runs Bitcoin Core, two Lightning nodes (a "shop" and a "customer"), an open channel between them, and a relay.
 
 | Command | What it does |
 | --- | --- |
-| `make up` | Start the test network |
-| `make status` | Show what is running |
-| `make mine BLOCKS=6` | Mine blocks |
-| `make invoice AMOUNT=1000` | Create an invoice on the shop node |
-| `make pay INVOICE=lnbcrt...` | Pay an invoice from the customer node |
-| `make reset` | Delete all local test data and start clean |
+| `just up` | Start the test network |
+| `just status` | Show what is running |
+| `just mine 6` | Mine blocks |
+| `just invoice 1000` | Create an invoice on the shop node |
+| `just pay lnbcrt...` | Pay an invoice from the customer node |
+| `just reset` | Delete all local test data and start clean |
 
 ## Labs
 

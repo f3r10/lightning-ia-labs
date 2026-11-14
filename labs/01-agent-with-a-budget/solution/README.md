@@ -5,9 +5,9 @@
 You may read it or run it:
 
 ```bash
-make lab1-invoices
-make lab1-simulate
-make check-lab1
+just lab1-invoices
+just lab1-simulate
+just check-lab1
 ```
 
 CI uses this script because CI has no coding agent.

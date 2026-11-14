@@ -18,7 +18,7 @@ try {
   wallet = await lnbits.findOrCreateWallet("shop-wallet");
   pass("LNbits is running.");
 } catch (error) {
-  fail(`LNbits does not answer: ${error.message}`, "Run: make up-lab2");
+  fail(`LNbits does not answer: ${error.message}`, "Run: just up-lab2");
   finish();
 }
 
@@ -37,7 +37,7 @@ try {
   page = await api("GET", "/");
   pass("Your store page loads.");
 } catch {
-  fail(`Your store does not answer at ${STORE}.`, "Start your store. To try the reference solution, run: make lab2-solution");
+  fail(`Your store does not answer at ${STORE}.`, "Start your store. To try the reference solution, run: just lab2-solution");
   finish();
 }
 const secrets = [wallet.inkey, wallet.adminkey, env.LNBITS_ADMIN_PASSWORD].filter(Boolean);
@@ -95,7 +95,7 @@ try {
 // 4. The customer node pays one order. Only that order becomes paid.
 const payment = lncli("lnd-customer", "payinvoice", "--force", "--json", order.bolt11);
 if (payment.status !== "SUCCEEDED") {
-  fail(`The customer node could not pay: ${payment.status}`, "Run: make status. Then try: make reset, and make up-lab2.");
+  fail(`The customer node could not pay: ${payment.status}`, "Run: just status. Then try: just reset, and just up-lab2.");
   finish();
 }
 pass("The customer node paid the invoice.");
@@ -106,7 +106,7 @@ try {
   fail("The order did not become paid within 30 seconds.", "Your server must ask LNbits about the payment when the order status is read.");
 }
 if ((await lookup()).data.paid === true) pass("LNbits confirms the payment settled.");
-else fail("LNbits does not show the payment as settled.", "Run: make reset, and make up-lab2.");
+else fail("LNbits does not show the payment as settled.", "Run: just reset, and just up-lab2.");
 if ((await getStatus(other.id)) === "pending") {
   pass("The other, unpaid order is still pending.");
 } else {

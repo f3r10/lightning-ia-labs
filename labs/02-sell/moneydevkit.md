@@ -101,7 +101,7 @@ In our test (2026-11-07), a real agent followed prompts 1 to 3 in about 4 minute
 5. **Run the check.**
 
    ```bash
-   make check-lab2b STORE_URL=YOUR_URL ENV_FILE=/full/path/to/my-store/.env.local
+   just check-lab2b YOUR_URL /full/path/to/my-store/.env.local
    ```
 
    Run it from the `lightning-ia-labs` folder. ✅ The last line starts with `RESULT: Lab 2b passed.` If a line says FAIL, give that line and its "What to do" line to your agent, and ask it to fix the store and deploy again.
@@ -164,7 +164,7 @@ Run npm run build, deploy to production, and tell me when it is done.
 ## How to know it worked
 
 ```bash
-make check-lab2b STORE_URL=YOUR_URL ENV_FILE=/full/path/to/my-store/.env.local
+just check-lab2b YOUR_URL /full/path/to/my-store/.env.local
 ```
 
 Expected output:

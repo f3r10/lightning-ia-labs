@@ -9,7 +9,7 @@ import { readEnv, loadState } from "../scripts/common.mjs";
 const env = readEnv();
 const invoices = loadState("invoices.json");
 if (!invoices) {
-  console.error("ERROR: no invoices yet. Run: make lab1-invoices");
+  console.error("ERROR: no invoices yet. Run: just lab1-invoices");
   process.exit(1);
 }
 const require = createRequire(import.meta.url);

@@ -5,7 +5,7 @@ import { readEnv, setEnv } from "./common.mjs";
 
 const budgetSats = Number(process.argv[2] ?? 1000);
 if (!Number.isInteger(budgetSats) || budgetSats <= 0) {
-  console.error("ERROR: the budget must be a whole number of sats, for example: make lab1-connection BUDGET=1000");
+  console.error("ERROR: the budget must be a whole number of sats, for example: just lab1-connection 1000");
   process.exit(1);
 }
 

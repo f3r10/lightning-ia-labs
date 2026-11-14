@@ -7,12 +7,12 @@ import { readEnv, saveState, STATE_DIR } from "./common.mjs";
 // The MCP server's name in your agent. Use different names to keep several wallets side by side.
 const SERVER_NAME = process.argv[3] || "alby-lab1";
 if (!/^[A-Za-z0-9_-]{1,40}$/.test(SERVER_NAME)) {
-  console.error("ERROR: NAME may only use letters, numbers, - and _. Example: make lab1-mcp-claude-code NAME=alby-live");
+  console.error("ERROR: NAME may only use letters, numbers, - and _. Example: just lab1-mcp-claude-code alby-live");
   process.exit(1);
 }
 const env = readEnv();
 if (!env.NWC_CONNECTION_STRING) {
-  console.error("ERROR: there is no NWC connection yet. Run: make lab1-connection BUDGET=1000");
+  console.error("ERROR: there is no NWC connection yet. Run: just lab1-connection 1000");
   process.exit(1);
 }
 // Use the "node" found on your PATH (for example /opt/homebrew/bin/node), not the exact

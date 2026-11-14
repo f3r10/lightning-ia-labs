@@ -40,7 +40,7 @@ LSPS2 is an open standard, [bLIP-52](https://github.com/lightning/blips/blob/mas
 
 **moneydevkit uses LSPS4**, a variant of just-in-time channels, with its own LSP. LSPS4 is a [draft](https://github.com/ZmnSCPxj-jr/lsp/blob/db0e99e8b65641a18c2d9b9fdf22c2dbae2af32d/LSPS4/ephemeral.md), not an official standard. The moneydevkit SDK handles it for you: you do not configure anything for liquidity.
 
-**The LNbits path in this lab does not use an LSP.** On regtest, the channel between the customer node and the shop node is already open when you run `make up`.
+**The LNbits path in this lab does not use an LSP.** On regtest, the channel between the customer node and the shop node is already open when you run `just up`.
 
 ### The two paths
 
@@ -55,13 +55,13 @@ There are two paths:
 2. Run this once, with a good internet connection:
 
    ```bash
-   make up-lab2
+   just up-lab2
    ```
 
 ## Start
 
 ```bash
-make up-lab2
+just up-lab2
 ```
 
 You should see this at the end:
@@ -89,7 +89,7 @@ OK: the wallet "shop-wallet" is ready, and its invoice key is saved in labs/02-s
 4. **Pay as the customer.**
 
    ```bash
-   make pay INVOICE=PASTE_THE_INVOICE_HERE
+   just pay PASTE_THE_INVOICE_HERE
    ```
 
    ✅ The terminal shows `OK: paid.` Within a few seconds, the page shows `paid`.
@@ -97,12 +97,12 @@ OK: the wallet "shop-wallet" is ready, and its invoice key is saved in labs/02-s
 5. **Run the check.**
 
    ```bash
-   make check-lab2
+   just check-lab2
    ```
 
    ✅ The last line starts with `RESULT: Lab 2a passed.`
 
-6. **Optional: a ready-made point of sale.** In LNbits, open the TPoS extension and create a terminal for `shop-wallet`. Open it, enter an amount, and pay the invoice with `make pay`.
+6. **Optional: a ready-made point of sale.** In LNbits, open the TPoS extension and create a terminal for `shop-wallet`. Open it, enter an amount, and pay the invoice with `just pay`.
 
    ✅ The terminal shows that the payment arrived.
 
@@ -137,20 +137,20 @@ Rules:
 - Do not print any key, and do not show me the contents of .env.
 - Do not commit anything.
 
-Start the server in the background when you finish. Then tell me to run: make check-lab2
+Start the server in the background when you finish. Then tell me to run: just check-lab2
 ```
 
 ### Prompt 2 (optional): make it your own project
 
 ```text
 Change the store in labs/02-sell/my-store to sell MY_PRODUCT_IDEA. Keep the routes and the rules the same.
-Run make check-lab2 when you finish. Fix what it reports, but do not change the check.
+Run just check-lab2 when you finish. Fix what it reports, but do not change the check.
 ```
 
 ## How to know it worked
 
 ```bash
-make check-lab2
+just check-lab2
 ```
 
 The check needs the item `coffee` in your store. It creates orders, pays one from the customer node, and asks LNbits directly. Expected output:
@@ -172,7 +172,7 @@ Lab 2a check: selling with LNbits. Store address: http://127.0.0.1:3002
 RESULT: Lab 2a passed. Your store marks an order as paid only after the invoice settles, and the page has no key.
 ```
 
-The reference solution is in `solution/store`. To try it, stop your own store and run `make lab2-solution`. It uses the same port, 3002.
+The reference solution is in `solution/store`. To try it, stop your own store and run `just lab2-solution`. It uses the same port, 3002.
 
 ## To explore
 
@@ -183,18 +183,18 @@ The reference solution is in `solution/store`. To try it, stop your own store an
 | What you see | What to do |
 | --- | --- |
 | `Your store does not answer` | Start your store, or ask your agent to start it. Check that it uses port 3002. |
-| `address already in use` on port 3002 | Another store is running. Run `make down-lab2`, stop your own store, and try again. |
+| `address already in use` on port 3002 | Another store is running. Run `just down-lab2`, stop your own store, and try again. |
 | `The page source contains an LNbits key` | Move every LNbits call to your server. Then create a new wallet key, because the old one was exposed. |
 | `POST /api/orders did not work` | Your store does not follow the routes above. Give your agent the failure message. |
 | `The order did not become paid` | Your server must ask LNbits about the payment each time it reads an order. |
-| `make pay` says `insufficient` or `no route` | Run `make status`. If the channel is not active, run `make reset` and start again. |
-| Anything else | Run `make reset`, then start this lab again. |
+| `just pay` says `insufficient` or `no route` | Run `just status`. If the channel is not active, run `just reset` and start again. |
+| Anything else | Run `just reset`, then start this lab again. |
 
 ## Clean up
 
 ```bash
-make down-lab2   # stop the shop wallet and the reference store
-make reset       # delete all local test data
+just down-lab2   # stop the shop wallet and the reference store
+just reset       # delete all local test data
 ```
 
 Also stop your own store, if you started it. Your code in `my-store` stays on your disk.

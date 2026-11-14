@@ -27,6 +27,7 @@ Install these:
 - Docker Desktop, or Docker Engine with Compose v2
 - git
 - Node.js 20 or newer
+- [just](https://just.systems), a command runner (`brew install just` on a Mac)
 - your coding agent
 
 Then run this once, with a good internet connection. It downloads the images and takes a few minutes:
@@ -34,13 +35,13 @@ Then run this once, with a good internet connection. It downloads the images and
 ```bash
 git clone https://github.com/f3r10/lightning-ia-labs.git
 cd lightning-ia-labs
-make up-lab1
+just up-lab1
 ```
 
 ## Start
 
 ```bash
-make up-lab1
+just up-lab1
 ```
 
 You should see this at the end:
@@ -54,7 +55,7 @@ OK: the wallet "agent-wallet" has 20000 sats.
 1. **Create a connection with a budget of 1,000 sats.**
 
    ```bash
-   make lab1-connection BUDGET=1000
+   just lab1-connection 1000
    ```
 
    ✅ You see `OK: created an NWC connection with a budget of 1000 sats.` The secret is saved in `.env`, and it is not shown on screen.
@@ -64,7 +65,7 @@ OK: the wallet "agent-wallet" has 20000 sats.
    **Claude Code:**
 
    ```bash
-   make lab1-mcp-claude-code
+   just lab1-mcp-claude-code
    ```
 
    Check that Claude Code can start the server:
@@ -78,12 +79,12 @@ OK: the wallet "agent-wallet" has 20000 sats.
    **Claude Desktop:**
 
    ```bash
-   make lab1-mcp-config
+   just lab1-mcp-config
    ```
 
    This writes `labs/01-agent-with-a-budget/.state/mcp-config-alby-lab1.json`. Copy its `alby-lab1` entry into `mcpServers` in Claude Desktop's `claude_desktop_config.json`. Find that file in Claude Desktop under Settings, Developer, Edit Config. Then restart Claude Desktop.
 
-   **Any other MCP client:** run `make lab1-mcp-config` and add the same entry to your client's MCP settings. The entry has this shape:
+   **Any other MCP client:** run `just lab1-mcp-config` and add the same entry to your client's MCP settings. The entry has this shape:
 
    ```json
    {
@@ -100,7 +101,7 @@ OK: the wallet "agent-wallet" has 20000 sats.
    **Already have a server named `alby-lab1`?** The helper replaces a server with the same name. To keep both, choose another name:
 
    ```bash
-   make lab1-mcp-claude-code NAME=alby-class1
+   just lab1-mcp-claude-code alby-class1
    ```
 
    Then use that name instead of `alby-lab1` in the prompts below.
@@ -114,7 +115,7 @@ OK: the wallet "agent-wallet" has 20000 sats.
 4. **Create two invoices on the shop node.**
 
    ```bash
-   make lab1-invoices
+   just lab1-invoices
    ```
 
    ✅ You see one SMALL invoice (100 sats) and one LARGE invoice (5,000 sats).
@@ -145,7 +146,7 @@ This path is not needed to pass the lab. It uses real sats, so keep the amounts 
    Type this in your own terminal, not in a chat with your agent, because the connection string is a secret.
 3. Repeat steps 3, 5 and 6 with invoices that you create in another wallet. The large invoice must be above the budget.
 
-`make check-lab1` does not cover this path, because it can only see the local wallet.
+`just check-lab1` does not cover this path, because it can only see the local wallet.
 
 ## Prompts for your agent
 
@@ -190,7 +191,7 @@ Tell me which of them can spend money. Do not call any tool that spends money.
 ## How to know it worked
 
 ```bash
-make check-lab1
+just check-lab1
 ```
 
 The check talks to the wallet and the shop node directly, not to your agent. It also tries one over-budget payment by itself. Expected output:
@@ -215,19 +216,19 @@ The check cannot see whether your agent tried the large invoice. Only your agent
 | What you see | What to do |
 | --- | --- |
 | `Cannot connect to the Docker daemon` | Start Docker Desktop and try again. |
-| `port is already allocated` | Another program uses port 5001 or 7777. Stop that program, then run `make up-lab1`. |
-| The agent does not list `alby-lab1` | Restart the agent. In Claude Code, type `/mcp`. Run `make lab1-mcp-claude-code` again if needed. |
-| `no info event (kind 13194) returned from relay` | The wallet is not connected to the relay. Run `make up-lab1`, then try again. |
-| `The wallet has exceeded its spending quota` on the small invoice | You used the budget. Run `make lab1-connection BUDGET=1000`, connect the agent again (step 2) and run `make lab1-invoices`. |
+| `port is already allocated` | Another program uses port 5001 or 7777. Stop that program, then run `just up-lab1`. |
+| The agent does not list `alby-lab1` | Restart the agent. In Claude Code, type `/mcp`. Run `just lab1-mcp-claude-code` again if needed. |
+| `no info event (kind 13194) returned from relay` | The wallet is not connected to the relay. Run `just up-lab1`, then try again. |
+| `The wallet has exceeded its spending quota` on the small invoice | You used the budget. Run `just lab1-connection 1000`, connect the agent again (step 2) and run `just lab1-invoices`. |
 | `FAIL The small invoice ... is not paid`, but you paid it | You created new invoices after paying. Pay the new small invoice. |
-| `timed out ... waiting for: the shop node to sync` | Update your copy with `git pull`, then run `make up-lab1` again. Older copies could not restart a chain that was left for a day. |
-| You have two copies of this repository | They share the same Docker containers. Run `make down` in the other copy first. |
-| Anything else | Run `make reset`, then start this lab again. |
+| `timed out ... waiting for: the shop node to sync` | Update your copy with `git pull`, then run `just up-lab1` again. Older copies could not restart a chain that was left for a day. |
+| You have two copies of this repository | They share the same Docker containers. Run `just down` in the other copy first. |
+| Anything else | Run `just reset`, then start this lab again. |
 
 ## Clean up
 
 ```bash
-make down-lab1                                  # stop the Lab 1 wallet
+just down-lab1                                  # stop the Lab 1 wallet
 claude mcp remove --scope user alby-lab1        # if you used Claude Code
-make reset                                      # delete all local test data
+just reset                                      # delete all local test data
 ```

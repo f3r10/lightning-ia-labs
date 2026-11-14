@@ -21,7 +21,7 @@ wait_for() {
   until "$@" >/dev/null 2>&1; do
     if (( SECONDS - start >= timeout )); then
       echo "ERROR: timed out after ${timeout}s waiting for: $what" >&2
-      echo "Try: make logs   (to see errors), or: make reset   (to start again)" >&2
+      echo "Try: just logs   (to see errors), or: just reset   (to start again)" >&2
       exit 1
     fi
     sleep 1

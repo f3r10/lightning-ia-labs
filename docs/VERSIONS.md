@@ -2,6 +2,12 @@
 
 Everything below was checked on **2026-11-04**. Tools change quickly, so check again before each course edition.
 
+## Command runner
+
+| Tool | Version | Notes |
+| --- | --- | --- |
+| just | 1.59.0 | Runs every command in the `justfile`. Recipe groups need just 1.27 or newer. |
+
 ## Shared regtest stack
 
 | Tool | Version | Pinned digest | Network |

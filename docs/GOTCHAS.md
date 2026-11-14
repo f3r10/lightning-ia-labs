@@ -5,8 +5,8 @@ Surprises found while building the labs, and what to do about them.
 ## Regtest stack
 
 - **The strfry image blocks unknown authors by default.** The default config of `dockurr/strfry` runs a write policy with a fixed allow-list. The wallet's events are refused without a clear error on the wallet's side, and clients then report `no info event (kind 13194) returned from relay`. We mount `infra/regtest/strfry.conf`, which turns the policy off. Use that only for local testing.
-- **A regtest chain left for a day stops LND from syncing.** Bitcoin Core treats a node whose newest block is over 24 hours old as still downloading the chain (`initialblockdownload: true`). LND also counts as synced only when the newest block is recent. So `make up` timed out with `waiting for: the shop node to sync` nine days after the last session. The fix: bitcoind runs with `-maxtipage=315360000`, and the bootstrap always mines one fresh block.
-- **Two copies of this repository share the same Docker names.** Containers and volumes are named `lnlabs-...` in every clone, so a second clone reuses the first one's containers and data. Use one copy at a time, or run `make down` in the other copy first.
+- **A regtest chain left for a day stops LND from syncing.** Bitcoin Core treats a node whose newest block is over 24 hours old as still downloading the chain (`initialblockdownload: true`). LND also counts as synced only when the newest block is recent. So `just up` timed out with `waiting for: the shop node to sync` nine days after the last session. The fix: bitcoind runs with `-maxtipage=315360000`, and the bootstrap always mines one fresh block.
+- **Two copies of this repository share the same Docker names.** Containers and volumes are named `lnlabs-...` in every clone, so a second clone reuses the first one's containers and data. Use one copy at a time, or run `just down` in the other copy first.
 - **The strfry image needs a database folder.** Without a volume at `/app/strfry-db`, it restarts forever with `mdb_env_open: No such file or directory`.
 
 ## Lab 1: which wallet service, and why LNbits

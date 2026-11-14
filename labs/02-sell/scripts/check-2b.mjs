@@ -9,7 +9,7 @@ const envFile = process.argv[3];
 const { pass, fail, finish } = reporter("Lab 2b", "Your store is deployed, keeps its secrets on the server, and only moneydevkit can mark an order as paid.");
 
 if (!/^https?:\/\//.test(STORE)) {
-  console.log("Usage: make check-lab2b STORE_URL=https://your-store.vercel.app");
+  console.log("Usage: just check-lab2b https://your-store.vercel.app");
   process.exit(1);
 }
 console.log(`Lab 2b check: moneydevkit store at ${STORE}\n`);

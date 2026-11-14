@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 if [ ! -f .env ]; then
-  echo "Lab 2 is not started yet. Run: make up-lab2"
+  echo "Lab 2 is not started yet. Run: just up-lab2"
   exit 1
 fi
 exec node scripts/check.mjs

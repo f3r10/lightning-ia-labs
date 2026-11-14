@@ -78,10 +78,10 @@ up-lab1: up
 down-lab1:
     @{{lab1}} down
 
-# Create an NWC connection with a budget. Example: just lab1-connection 1000
+# Create an NWC connection. Example: just lab1-connection 1000 alby-readonly balance,info daily
 [group('lab 1')]
-lab1-connection budget="1000":
-    @node {{lab1_dir}}/scripts/create-connection.mjs "{{budget}}"
+lab1-connection budget="1000" name="alby-lab1" permissions="all" renew="never":
+    @node {{lab1_dir}}/scripts/create-connection.mjs "{{budget}}" "{{name}}" "{{permissions}}" "{{renew}}"
 
 # Create the small and the large invoice on the shop node
 [group('lab 1')]
@@ -97,6 +97,11 @@ lab1-mcp-claude-code name="alby-lab1":
 [group('lab 1')]
 lab1-mcp-config name="alby-lab1":
     @node {{lab1_dir}}/scripts/connect-mcp.mjs config "{{name}}"
+
+# Check a proof of payment. Example: just lab1-verify-preimage PREIMAGE lnbcrt...
+[group('lab 1')]
+lab1-verify-preimage preimage invoice:
+    @node {{lab1_dir}}/scripts/verify-preimage.mjs "{{preimage}}" "{{invoice}}"
 
 # Reference solution: run the exercise without a model
 [group('lab 1')]

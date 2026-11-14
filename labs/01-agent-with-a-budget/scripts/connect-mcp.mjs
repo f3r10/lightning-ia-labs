@@ -2,18 +2,24 @@
 import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
-import { readEnv, saveState, STATE_DIR } from "./common.mjs";
+import { readEnv, saveState, STATE_DIR, connectionKey, validName, DEFAULT_NAME } from "./common.mjs";
 
 // The MCP server's name in your agent. Use different names to keep several wallets side by side.
-const SERVER_NAME = process.argv[3] || "alby-lab1";
-if (!/^[A-Za-z0-9_-]{1,40}$/.test(SERVER_NAME)) {
+const SERVER_NAME = process.argv[3] || DEFAULT_NAME;
+if (!validName(SERVER_NAME)) {
   console.error("ERROR: NAME may only use letters, numbers, - and _. Example: just lab1-mcp-claude-code alby-live");
   process.exit(1);
 }
 const env = readEnv();
-if (!env.NWC_CONNECTION_STRING) {
+// Use the connection made under this name. If there is none, use the main connection.
+const ownConnection = env[connectionKey(SERVER_NAME)];
+const CONNECTION = ownConnection || env.NWC_CONNECTION_STRING;
+if (!CONNECTION) {
   console.error("ERROR: there is no NWC connection yet. Run: just lab1-connection 1000");
   process.exit(1);
+}
+if (!ownConnection && SERVER_NAME !== DEFAULT_NAME) {
+  console.log(`Note: there is no connection named "${SERVER_NAME}", so this uses the main connection (alby-lab1).`);
 }
 // Use the "node" found on your PATH (for example /opt/homebrew/bin/node), not the exact
 // versioned folder Node.js runs from. That folder disappears when Node.js is updated.
@@ -34,7 +40,7 @@ const config = {
     [SERVER_NAME]: {
       command: NODE,
       args: [server],
-      env: { NWC_CONNECTION_STRING: env.NWC_CONNECTION_STRING },
+      env: { NWC_CONNECTION_STRING: CONNECTION },
     },
   },
 };
@@ -52,7 +58,7 @@ if (process.argv[2] === "claude-code") {
     // Nothing to remove the first time.
   }
   try {
-    run(["mcp", "add", "--scope", "user", SERVER_NAME, "--env", `NWC_CONNECTION_STRING=${env.NWC_CONNECTION_STRING}`, "--", NODE, server]);
+    run(["mcp", "add", "--scope", "user", SERVER_NAME, "--env", `NWC_CONNECTION_STRING=${CONNECTION}`, "--", NODE, server]);
   } catch (error) {
     console.error(`ERROR: could not run the "claude" command. Is Claude Code installed? ${error.code ?? ""}`);
     console.error(`You can still use the config file: ${configPath}`);

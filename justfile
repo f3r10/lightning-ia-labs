@@ -64,6 +64,11 @@ pay invoice:
 invoice amount memo="just invoice":
     @infra/regtest/scripts/invoice.sh "{{amount}}" "{{memo}}"
 
+# Show what an invoice asks for: amount, description, expiry. Example: just decode lnbcrt...
+[group('regtest')]
+decode invoice:
+    @infra/regtest/scripts/decode.sh "{{invoice}}"
+
 # ---- Lab 1: agent with a budget ----
 
 # Start the Lab 1 wallet
@@ -131,6 +136,11 @@ down-lab2:
 lab2-solution:
     @docker compose --env-file {{lab2_dir}}/.env -f {{lab2_dir}}/docker-compose.yml --profile solution up -d store-solution
     @echo "OK: the reference store is at http://127.0.0.1:3002"
+
+# Create a shop-wallet invoice that expires soon. Example: just lab2-invoice 100 30
+[group('lab 2')]
+lab2-invoice amount="100" expiry="30":
+    @node {{lab2_dir}}/scripts/make-invoice.mjs "{{amount}}" "{{expiry}}"
 
 # Check whether Lab 2a worked
 [group('lab 2')]

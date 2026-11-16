@@ -61,7 +61,8 @@ createServer(async (req, res) => {
     }
     if (req.method === "POST" && pathname === "/api/orders") {
       const { item } = await readJson(req);
-      const product = PRODUCTS[item];
+      // Object.hasOwn: names like "__proto__" or "toString" are not products.
+      const product = typeof item === "string" && Object.hasOwn(PRODUCTS, item) ? PRODUCTS[item] : undefined;
       if (!product) return send(res, 400, { error: "Unknown item" });
       const invoice = await lnbits("POST", "/api/v1/payments", {
         out: false,

@@ -40,6 +40,9 @@ The class creates the budget in Alby. For a path with no real money we need a wa
 
 - **No extension is simply called "webshop" in the LNbits catalog.** The class script lists a web shop. The catalog has `tpos`, `inventory`, `orders`, `events`, `lnticket`, `offlineshop`, `nostrmarket` and `shipping`. `nostrmarket` is the closest to a web shop. Its description is "Nostr Webshop/market on LNbits".
 - **Each LNbits instance has one funding source.** Lab 1 uses the customer node and Lab 2 uses the shop node, so each lab runs its own LNbits container.
+- **LNbits refuses webhooks to private addresses.** It accepts a `webhook` field when it creates an invoice, but on regtest its log says `Invalid webhook URL: Webhook target IP address is not allowed.` This is a protection against requests to private networks. So a regtest store learns about payments by asking LNbits (polling).
+- **`localhost` can reach the wrong store.** If an old store still listens on port 3002 on the IPv6 address, `localhost:3002` reaches it instead of the Docker store on `127.0.0.1:3002`. The exercises use `127.0.0.1`.
+- **The reference store crashed on `{"item":"__proto__"}`** (HTTP 500), because every JavaScript object has that property. It now checks items with `Object.hasOwn`.
 - **Regtest cannot be public.** The class script says "publish". On regtest, the store runs on your own computer. A public store needs a public network.
 - **moneydevkit networks.** Its public docs do not state the networks. Its repository documents staging on signet (Mutinynet), selected with `MDK_NETWORK=signet` and other `MDK_*` variables in `STAGING-TESTING.md`. Mainnet is the default.
 - **moneydevkit custody.** Its docs say "We never have access to your funds". The merchant holds `MDK_MNEMONIC`, and the node runs on the merchant's own hosting. moneydevkit's nodes provide the channels and inbound liquidity.

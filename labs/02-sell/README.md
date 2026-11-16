@@ -106,6 +106,85 @@ OK: the wallet "shop-wallet" is ready, and its invoice key is saved in labs/02-s
 
    ✅ The terminal shows that the payment arrived.
 
+### Think about it
+
+Steps 1 to 6 show the idea. These exercises make you use it. Each one changes one thing. **Write down your answer before you run anything**, then compare. Your facilitator says which ones you do in class and which ones are homework.
+
+Do them after step 5, in this order. They work with your store or with the reference store (`just lab2-solution`). They do not break `just check-lab2`.
+
+In the commands below, `127.0.0.1:3002` is your store. Use `127.0.0.1`, not `localhost`: on some computers, `localhost` can reach a different program.
+
+7. **Pay it twice.** Create an order, then pay its invoice two times:
+
+   ```bash
+   curl -s -X POST http://127.0.0.1:3002/api/orders -H 'content-type: application/json' -d '{"item":"coffee"}'
+   just decode PASTE_THE_BOLT11_HERE
+   just pay PASTE_THE_BOLT11_HERE
+   just pay PASTE_THE_BOLT11_HERE
+   ```
+
+   Write down first: does the customer pay twice? Does your store need code to stop this?
+
+   ✅ You know what the second `just pay` answered, and who refused it: your store, LNbits or the Lightning node.
+
+8. **Cheat the price.** Act as a dishonest customer. Send your store a price, or a strange item, in the request:
+
+   ```bash
+   curl -s -X POST http://127.0.0.1:3002/api/orders -H 'content-type: application/json' -d '{"item":"coffee","amount":1,"priceSats":1}'
+   curl -s -X POST http://127.0.0.1:3002/api/orders -H 'content-type: application/json' -d '{"item":"__proto__"}'
+   curl -s -X POST http://127.0.0.1:3002/api/orders -H 'content-type: application/json' -d '{"item":"tea"}'
+   ```
+
+   Run `just decode` on any invoice that comes back, and look at its amount. Then ask your agent to add a feature, without any extra rules: use [Prompt 3: add a quantity](#prompt-3-add-a-quantity). Attack the new feature too: try a quantity of `-1`, `0`, `1.5` and `1000000`.
+
+   ✅ You tested your own store, and you can say who sets the price: the page, or the server. You did not trust the agent's word for it.
+
+9. **How much can the shop receive?** Run `just status`. It shows how many sats are on each side of the only channel.
+   - Write down: what is the largest sale the shop can receive right now? Where in the output is that number?
+   - Try a sale that is too big, then a big one that fits:
+
+     ```bash
+     just pay $(just invoice 3000000 "too big")
+     just pay $(just invoice 2000000 "big order")
+     just status
+     ```
+
+   - Write down: how much can the shop receive now? What does a shop do when this number gets close to zero?
+
+   Do this exercise last in class. Afterwards, small sales still work. `just reset` puts the channel back as it was.
+
+   ✅ You can explain inbound liquidity with the numbers from `just status`, and why a new shop needs an LSP.
+
+10. **Restart the store (homework).** Create an order, pay it, and check that it shows `paid`. Then ask your agent to stop your store and start it again. For the reference store, run: `docker restart lnlabs-lab2-store-solution-1`. Ask for the same order:
+
+    ```bash
+    curl -s http://127.0.0.1:3002/api/orders/PASTE_THE_ORDER_ID
+    ```
+
+    Then open LNbits (step 1) and look at the payments of `shop-wallet`.
+
+    ✅ You can say what was lost, what was not lost, and where the truth about the payment lives.
+
+11. **Late payment (homework).** Create an invoice that expires in 30 seconds:
+
+    ```bash
+    just lab2-invoice 100 30
+    just decode PASTE_THE_INVOICE
+    ```
+
+    Wait until `just decode` says `EXPIRED`, then pay it with `just pay`.
+
+    Write down: why do invoices expire? Think about a price in your own currency, and the price of bitcoin one hour later.
+
+    ✅ You saw the payment refused, and you can give two reasons why a shop wants invoices that expire.
+
+12. **Who tells the kitchen? (homework)** A customer pays, then closes the page before it shows `paid`. The coffee must still be made.
+    - Use [Prompt 4: what runs when an invoice settles?](#prompt-4-what-runs-when-an-invoice-settles).
+    - Write down: in your store, when does the server find out that the order is paid? What would you change so that the kitchen always knows, even if nobody opens the page?
+    - Compare with Path 2b: there, moneydevkit sends a **webhook** to the server when a checkout is paid.
+
+    ✅ You can describe one design where the server learns about the payment by itself, and say what could go wrong with it.
+
 ### Path 2b: moneydevkit
 
 See [moneydevkit.md](moneydevkit.md).
@@ -145,6 +224,28 @@ Start the server in the background when you finish. Then tell me to run: just ch
 ```text
 Change the store in labs/02-sell/my-store to sell MY_PRODUCT_IDEA. Keep the routes and the rules the same.
 Run just check-lab2 when you finish. Fix what it reports, but do not change the check.
+```
+
+### Prompt 3: add a quantity
+
+For step 8. On purpose, this prompt gives no rules. You check the result yourself.
+
+```text
+Add a quantity selector to the store page in labs/02-sell/my-store, so a customer can buy several coffees in one order.
+Do not commit anything. Restart the server when you finish.
+```
+
+### Prompt 4: what runs when an invoice settles?
+
+For step 12.
+
+```text
+Read the server code of my store in labs/02-sell/my-store. Do not change anything.
+A customer pays an order and closes the page right away. Explain, step by step:
+1. Which code in my server runs at the moment the invoice settles?
+2. When does my server first find out that this order is paid?
+3. If nobody ever opens that order again, does my server ever know it was paid?
+Then suggest two ways to make my server learn about payments by itself, and one risk of each. Do not write the code.
 ```
 
 ## How to know it worked

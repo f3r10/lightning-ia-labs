@@ -51,4 +51,4 @@ console.log(`OK: created the NWC connection "${name}".`);
 console.log(`  Budget:      ${budgetSats} sats, renewed: ${renew}`);
 console.log(`  Permissions: ${permissions.join(", ")}`);
 console.log("The connection string is a secret, so it is saved in labs/01-agent-with-a-budget/.env and not shown here.");
-if (name !== DEFAULT_NAME) console.log(`Connect it to Claude Code with: just lab1-mcp-claude-code ${name}`);
+if (name !== DEFAULT_NAME) console.log(`Connect it with: just lab1-mcp-claude-code ${name}   (or, for another agent: just lab1-mcp codex ${name})`);

@@ -76,6 +76,14 @@ OK: the wallet "agent-wallet" has 20000 sats.
 
    ✅ The list has a line that starts with `alby-lab1:` and ends with `✔ Connected`. Then restart Claude Code, or open a new session, and type `/mcp` to see its tools.
 
+   **Codex, Gemini CLI or Grok Build:**
+
+   ```bash
+   just lab1-mcp codex     # or: just lab1-mcp gemini, just lab1-mcp grok
+   ```
+
+   Then follow [Following the labs with another agent](../../docs/other-agents.md) to check it. In the rest of this lab, wherever you see `just lab1-mcp-claude-code NAME`, use `just lab1-mcp AGENT NAME`.
+
    **Claude Desktop:**
 
    ```bash
@@ -337,5 +345,6 @@ The check cannot see whether your agent tried the large invoice. Only your agent
 ```bash
 just down-lab1                                  # stop the Lab 1 wallet
 claude mcp remove --scope user alby-lab1        # if you used Claude Code
+# Other agents: see docs/other-agents.md for their remove command
 just reset                                      # delete all local test data
 ```

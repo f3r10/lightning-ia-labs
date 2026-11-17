@@ -74,6 +74,14 @@ The class creates the budget in Alby. For a path with no real money we need a wa
 - **Payments on signet staging failed (tested 2026-11-07).** The store's node registered with the staging LSP through LSPS4 (`[LSPS4 Client] register_node ... from peer 03fd9a37...` in the Vercel logs). The invoice carried a route hint through that LSP (`cumulo-mutinynet`), which has direct channels to the MutinyNet faucet's node. But paying from the faucet failed twice with `FailureReasonNoRoute`, and the LSP never called the store's `/api/mdk` to open the channel. The cause is outside the app. Mainnet was not tested.
 - **`create-next-app` took 9.6 minutes on our test machine.** Do it before class.
 
+## Other agents (Codex, Gemini CLI, Grok Build)
+
+- **Gemini CLI 0.68.0 cuts `mcp add -e` values at the second `=`.** Its code does `const [key, value] = curr.split("=")`. An NWC connection string has `relay=` and `secret=`, so only 92 of its 184 characters were saved, and the wallet's MCP server stopped with `No relay URL found in connection string`. `gemini mcp list` showed only `Disconnected`. `just lab1-mcp gemini` writes `~/.gemini/settings.json` directly instead. Codex and Grok Build saved the full value.
+- **Gemini CLI starts no MCP server in an untrusted folder,** not even user-level ones. `gemini mcp list` shows `Disabled`. Its docs mention a `gemini trust` command, but version 0.68.0 does not have one: use the first-run question or `/permissions trust`.
+- **Grok Build also loads Claude Code's MCP servers** from `~/.claude.json` and `.mcp.json`, as `grok mcp doctor` shows. Project-scoped servers need a trusted folder.
+- **Antigravity CLI replaced Gemini CLI for unpaid and Google One accounts on 2026-06-18,** according to Google's docs. It has no `mcp add` command; servers go in `~/.gemini/config/mcp_config.json`. Not tested.
+- **The chat pages cannot do the labs.** chatgpt.com, gemini.google.com and grok.com cannot run local commands or start a local (stdio) MCP server.
+
 ## Testing with `claude -p`
 
 - **`claude -p` can stay attached to a server that the agent started.** The store worked after about 30 seconds, but the command did not return. This affected only our automated test.

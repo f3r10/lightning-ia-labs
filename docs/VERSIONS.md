@@ -38,3 +38,14 @@ Everything below was checked on **2026-11-04**. Tools change quickly, so check a
 | `standardwebhooks` | 1.1.1 | Verifies moneydevkit's webhook signatures. |
 | Next.js (`create-next-app`) | 16.4.5 | With React 19.3.0. Creating an app took 9.6 minutes on our test machine. |
 | Vercel CLI (`vercel`) | 65.12.1 | Used to link, set environment variables and deploy. |
+
+## Other agents
+
+Tested only for connecting the Lab 1 wallet (`just lab1-mcp`). See `other-agents.md`.
+
+| Tool | Version | Notes |
+| --- | --- | --- |
+| Codex CLI (`@openai/codex`) | 0.169.0 | `codex mcp add` saves the full connection string. |
+| Gemini CLI (`@google/gemini-cli`) | 0.68.0 | `mcp add -e` cuts values at the second `=`, so the helper writes `settings.json` directly. |
+| Grok Build (`grok`) | 1.0.70 | `grok mcp doctor` started the wallet server and found 11 tools. |
+| Antigravity CLI | not tested | Config file only: `~/.gemini/config/mcp_config.json`. |

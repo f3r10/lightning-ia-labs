@@ -10,7 +10,7 @@ You do not need to be a software engineer. You build with your own coding agent,
 - git
 - Node.js 20 or newer
 - [just](https://just.systems), a command runner. On a Mac: `brew install just`. On Linux or WSL: see https://just.systems/man/en/packages.html
-- your coding agent, such as Claude Code
+- your coding agent. The labs use Claude Code. With ChatGPT, Gemini or Grok, read [Following the labs with another agent](docs/other-agents.md)
 
 On Windows, run everything inside WSL 2.
 
@@ -55,6 +55,7 @@ Read [docs/security.md](docs/security.md). The main rule: API keys and NWC conne
 
 - [Versions](docs/VERSIONS.md)
 - [Gotchas](docs/GOTCHAS.md)
+- [Following the labs with another agent](docs/other-agents.md)
 
 ## License
 

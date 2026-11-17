@@ -98,6 +98,11 @@ lab1-invoices:
 lab1-mcp-claude-code name="alby-lab1":
     @node {{lab1_dir}}/scripts/connect-mcp.mjs claude-code "{{name}}"
 
+# Connect the wallet to another agent: codex, gemini or grok. Example: just lab1-mcp codex
+[group('lab 1')]
+lab1-mcp agent name="alby-lab1":
+    @node {{lab1_dir}}/scripts/connect-mcp.mjs "{{agent}}" "{{name}}"
+
 # Write an MCP config file for Claude Desktop or another client
 [group('lab 1')]
 lab1-mcp-config name="alby-lab1":

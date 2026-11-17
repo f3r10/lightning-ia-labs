@@ -9,5 +9,8 @@ node_modules/
 .DS_Store
 labs/02-sell/my-store/
 
+# Exercise solutions: kept local until after each class
+labs/*/solutions.md
+
 # Slide briefs for the course slides: kept local only
 docs/slide-briefs/

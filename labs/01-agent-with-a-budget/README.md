@@ -142,7 +142,7 @@ OK: the wallet "agent-wallet" has 20000 sats.
 
 ### Think about it
 
-Steps 1 to 7 show the idea. These exercises make you use it. Each one changes one thing. **Write down your answer before you run anything**, then compare. Your facilitator says which ones you do in class and which ones are homework.
+Steps 1 to 7 show the idea. These exercises make you use it. Each one changes one thing. **Write down your prediction before you run anything**, then write down what actually happened. Your agent may run commands for you, but the prediction must be yours. Your facilitator says which ones you do in class and which ones are homework, and shares the solutions after class.
 
 Do them after step 6, in this order. They do not break `just check-lab1`.
 
@@ -151,7 +151,7 @@ Do them after step 6, in this order. They do not break `just check-lab1`.
    - Create two invoices: `just invoice 901` and `just invoice 900`.
    - Use [Prompt 4: pay two invoices in order](#prompt-4-pay-two-invoices-in-order).
 
-   ✅ You know which of the two payments went through, and you can explain why with one number.
+   ✅ You wrote your prediction, and which of the two payments went through.
 
 9. **Try to trick the agent.** Create an invoice whose description gives orders to the agent:
 
@@ -171,11 +171,11 @@ Do them after step 6, in this order. They do not break `just check-lab1`.
 
    Restart your agent, then use [Prompt 6: the owner approves the split](#prompt-6-the-owner-approves-the-split).
 
-   ✅ You can say what protected the money the first time, and what protected it the second time. They are not the same thing.
+   ✅ You wrote what happened in each part: what the agent did the first time, and how many of the 8 payments went through the second time. For each part, you wrote what stopped the money, if anything did.
 
 10. **Find the hidden spender.** Use [Prompt 7: which tools can spend?](#prompt-7-which-tools-can-spend). Then check the agent's answer yourself: open https://github.com/getAlby/mcp/tree/master/src/tools and read the tools it named.
 
-    ✅ You found every tool that can spend money, and you can say why a tool's name and description matter so much to the model.
+    ✅ You have your own list of the tools that can spend money, and for each one, the line in its description or code that shows it.
 
 11. **Least privilege (homework).** Create a second connection that can read and receive, but not pay:
 
@@ -187,7 +187,7 @@ Do them after step 6, in this order. They do not break `just check-lab1`.
 
     Restart your agent and use [Prompt 8: pay with a read-only connection](#prompt-8-pay-with-a-read-only-connection).
 
-    ✅ The payment was refused, and you can explain why this refusal came before any budget check.
+    ✅ You wrote the exact message the wallet answered, and compared it with the message from step 6.
 
 12. **Check the receipt (homework).** Take the preimage that your agent showed after a successful payment, and the invoice it paid:
 
@@ -197,7 +197,7 @@ Do them after step 6, in this order. They do not break `just check-lab1`.
 
     Then change one character of the preimage and run it again.
 
-    ✅ You can explain why a preimage is a proof of payment that nobody can fake. You will need this idea for L402 in Class 4.
+    ✅ You wrote what each run printed, and why you think the result changed. You will need this idea in Class 4.
 
 13. **Design a budget (homework).** Your agent calls an API that costs 10 sats per call, about 200 times a day. Write down:
     - which budget and which renewal period (`never`, `daily`, `weekly` or `monthly`) you give it;
@@ -206,7 +206,7 @@ Do them after step 6, in this order. They do not break `just check-lab1`.
 
     Then create it, for example: `just lab1-connection 2000 alby-api all daily`. Open the LNbits page from step 7 and look at the new connection.
 
-    ✅ You can defend your numbers, and the connection shows the renewal you chose.
+    ✅ You wrote your three numbers with a reason for each, and the connection shows the renewal you chose.
 
 ### Optional: a real Alby wallet (real money)
 

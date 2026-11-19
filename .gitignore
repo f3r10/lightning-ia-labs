@@ -8,6 +8,12 @@ node_modules/
 *.log
 .DS_Store
 labs/02-sell/my-store/
+# What the helpers added to your agents (no secrets), for "just uninstall"
+.lnlabs/
+# MCP servers added with scope "project": they contain the wallet's connection string
+.mcp.json
+.gemini/
+.grok/
 
 # Exercise solutions: kept local until after each class
 labs/*/solutions.md

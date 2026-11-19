@@ -80,6 +80,20 @@ export class LNbits {
     await this.request("PUT", `/api/v1/extension/${id}/enable`);
   }
 
+  // Stops LNbits from calling outside services on its own: the extension catalogs on GitHub
+  // (checked every 10 minutes), and the price services. Call it after installing extensions,
+  // because LNbits checks each release against the catalogs when it installs it.
+  async stayOffline() {
+    await this.request("PATCH", "/admin/api/v1/settings", {
+      body: {
+        lnbits_extensions_manifests: [],
+        lnbits_wasm_extensions_manifests: [],
+        lnbits_price_aggregator_enabled: false,
+        lnbits_exchange_rate_providers: [],
+      },
+    });
+  }
+
   async restartExtension(id) {
     await this.request("PUT", `/api/v1/extension/${id}/deactivate`);
     await this.request("PUT", `/api/v1/extension/${id}/activate`);

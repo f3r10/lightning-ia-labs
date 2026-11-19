@@ -4,10 +4,18 @@ import { createRequire } from "node:module";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
-import { readEnv, saveState, STATE_DIR, connectionKey, validName, DEFAULT_NAME } from "./common.mjs";
+import { readEnv, saveState, STATE_DIR, connectionKey, validName, DEFAULT_NAME, ROOT } from "./common.mjs";
+import { recordAdded } from "../../../infra/mcp-registry.mjs";
 
 // The MCP server's name in your agent. Use different names to keep several wallets side by side.
 const SERVER_NAME = process.argv[3] || DEFAULT_NAME;
+// "user": the agent sees the server in every folder; its settings file is in your home folder.
+// "project": only inside this repository; the settings file stays in this folder (git ignores it).
+const SCOPE = process.argv[4] || "user";
+if (!["user", "project"].includes(SCOPE)) {
+  console.error(`ERROR: SCOPE must be "user" or "project", not "${SCOPE}".`);
+  process.exit(1);
+}
 if (!validName(SERVER_NAME)) {
   console.error("ERROR: NAME may only use letters, numbers, - and _. Example: just lab1-mcp codex alby-live");
   process.exit(1);
@@ -53,37 +61,42 @@ saveState(configFile, config);
 const configPath = join(STATE_DIR, configFile);
 
 // How each coding agent adds and removes a local (stdio) MCP server, with its own command.
-// "user" scope: the server is available in every folder, not only in this repository.
 const SECRET = `NWC_CONNECTION_STRING=${CONNECTION}`;
 const AGENTS = {
   "claude-code": {
     label: "Claude Code",
     bin: "claude",
-    remove: ["mcp", "remove", "--scope", "user", SERVER_NAME],
-    add: ["mcp", "add", "--scope", "user", SERVER_NAME, "--env", SECRET, "--", NODE, server],
+    // Claude's project scope is the file .mcp.json in this folder. Claude asks you to approve it.
+    scopes: { user: "user", project: "project" },
+    remove: (scope) => ["mcp", "remove", "--scope", scope, SERVER_NAME],
+    add: (scope) => ["mcp", "add", "--scope", scope, SERVER_NAME, "--env", SECRET, "--", NODE, server],
     check: `claude mcp list   (look for ${SERVER_NAME} ... Connected)`,
   },
   codex: {
     label: "Codex",
     bin: "codex",
-    remove: ["mcp", "remove", SERVER_NAME],
-    add: ["mcp", "add", SERVER_NAME, "--env", SECRET, "--", NODE, server],
+    scopes: { user: "user" },
+    remove: () => ["mcp", "remove", SERVER_NAME],
+    add: () => ["mcp", "add", SERVER_NAME, "--env", SECRET, "--", NODE, server],
     check: `codex mcp list   (look for ${SERVER_NAME}, enabled)`,
   },
   gemini: {
     label: "Gemini CLI",
     bin: "gemini",
+    scopes: { user: "user", project: "project" },
     // Not "gemini mcp add": version 0.68.0 cuts an -e value at its second "=", and NWC strings
     // contain "relay=" and "secret=". So this script writes the same entry into settings.json.
-    file: join(homedir(), ".gemini", "settings.json"),
-    remove: ["mcp", "remove", "--scope", "user", SERVER_NAME],
-    check: `gemini mcp list   (look for ${SERVER_NAME} ... Connected; if it says Disabled, trust this folder first: see the guide for other agents)`,
+    file: (scope) => join(scope === "user" ? homedir() : ROOT, ".gemini", "settings.json"),
+    remove: (scope) => ["mcp", "remove", "--scope", scope, SERVER_NAME],
+    check: `gemini mcp list   (look for ${SERVER_NAME} ... Connected; if it says Disabled, trust this folder first: see docs/other-agents.md)`,
   },
   grok: {
     label: "Grok Build",
     bin: "grok",
-    remove: ["mcp", "remove", "--scope", "user", SERVER_NAME],
-    add: ["mcp", "add", "--scope", "user", "-e", SECRET, SERVER_NAME, NODE, server],
+    // Grok starts project-scoped servers only in a folder you trust.
+    scopes: { user: "user", project: "project" },
+    remove: (scope) => ["mcp", "remove", "--scope", scope, SERVER_NAME],
+    add: (scope) => ["mcp", "add", "--scope", scope, "-e", SECRET, SERVER_NAME, NODE, server],
     check: `grok mcp doctor   (look for ${SERVER_NAME}), or: grok mcp list`,
   },
 };
@@ -91,22 +104,31 @@ const AGENTS = {
 const target = process.argv[2];
 const agent = AGENTS[target];
 if (agent) {
-  const run = (args) => execFileSync(agent.bin, args, { stdio: "pipe", encoding: "utf8" });
+  const scope = agent.scopes[SCOPE];
+  if (!scope) {
+    console.error(`ERROR: ${agent.label} has no "${SCOPE}" scope in this helper. Use: just lab1-mcp ${target} ${SERVER_NAME} user`);
+    process.exit(1);
+  }
+  // Run the agent's command from the repository folder, so "project" means this folder.
+  const run = (args) => execFileSync(agent.bin, args, { cwd: ROOT, stdio: "pipe", encoding: "utf8" });
   if (agent.file) {
-    writeEntryToFile(agent.file);
+    writeEntryToFile(agent.file(scope));
   } else {
     try {
-      run(agent.remove);
+      run(agent.remove(scope));
     } catch {
       // Nothing to remove the first time.
     }
-    addWithCommand(run);
+    addWithCommand(run, scope);
   }
-  const removeCommand = [agent.bin, ...agent.remove].join(" ");
-  console.log(`OK: ${agent.label} now has the MCP server "${SERVER_NAME}".`);
+  const removeCommand = [agent.bin, ...agent.remove(scope)].join(" ");
+  // For an entry this helper wrote into a file itself, "just uninstall" also removes it from that file.
+  recordAdded({ agent: target, name: SERVER_NAME, scope, remove: removeCommand, ...(agent.file && { file: agent.file(scope) }) });
+  console.log(`OK: ${agent.label} now has the MCP server "${SERVER_NAME}" (${scope} scope).`);
+  if (scope === "project") console.log("It is saved in this folder only, and git ignores the file. Start your agent from this folder.");
   console.log(`Check it with: ${agent.check}`);
   console.log(`Then restart ${agent.label}, or open a new session, and type /mcp to see its tools.`);
-  console.log(`To remove it later: ${removeCommand}`);
+  console.log(`To remove it later: ${removeCommand}   (or: just uninstall)`);
 } else if (target === "config") {
   console.log(`OK: the MCP config is in ${configPath}`);
   console.log("That file contains your secret. Do not share it or paste it into a chat.");
@@ -135,9 +157,9 @@ function writeEntryToFile(file) {
   writeFileSync(file, JSON.stringify(settings, null, 2) + "\n", { mode: 0o600 });
 }
 
-function addWithCommand(run) {
+function addWithCommand(run, scope) {
   try {
-    run(agent.add);
+    run(agent.add(scope));
   } catch (error) {
     if (error.code === "ENOENT") {
       console.error(`ERROR: could not find the "${agent.bin}" command. Is ${agent.label} installed?`);

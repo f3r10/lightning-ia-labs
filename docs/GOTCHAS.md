@@ -74,6 +74,13 @@ The class creates the budget in Alby. For a path with no real money we need a wa
 - **Payments on signet staging failed (tested 2026-11-07).** The store's node registered with the staging LSP through LSPS4 (`[LSPS4 Client] register_node ... from peer 03fd9a37...` in the Vercel logs). The invoice carried a route hint through that LSP (`cumulo-mutinynet`), which has direct channels to the MutinyNet faucet's node. But paying from the faucet failed twice with `FailureReasonNoRoute`, and the LSP never called the store's `/api/mdk` to open the channel. The cause is outside the app. Mainnet was not tested.
 - **`create-next-app` took 9.6 minutes on our test machine.** Do it before class.
 
+## What gets installed
+
+- **The `bitcoin/bitcoin` image is not from the Bitcoin Core project.** Its own page says it is unofficial, built by CI in `willcl-ark/bitcoin-core-docker` from Bitcoin Core's release binaries, checked against `guix.sigs`. The relay image `dockurr/strfry` is also a third-party build. Both can be replaced with `LNLABS_*_IMAGE`.
+- **Three Lab 1 packages have install scripts**, all from `@getalby/mcp` → `websocket-polyfill` → `websocket`: `bufferutil`, `utf-8-validate` (native add-ons) and `es5-ext` (prints a message). With `ignore-scripts=true`, the first two load a prebuilt binary, or their JavaScript `fallback.js` where none exists (for example on Linux ARM64). So we turned install scripts off. Our own check no longer imports `websocket-polyfill`: Node.js 22 has `WebSocket` built in.
+
+- **LNbits calls outside services by default.** Its background tasks fetch the bitcoin price (`price.lnbits.com`, and exchange-rate APIs) and refresh its extension catalogs from GitHub every 10 minutes. Our monitor saw connections to both within 90 seconds of starting. Setting `LNBITS_EXTENSIONS_MANIFESTS=[]` from the start breaks extension installs (`Release not found`), because LNbits checks each release against the catalog. So the compose files turn off the price lookups, and the setup scripts turn off the catalogs after installing (`PATCH /admin/api/v1/settings`). After that, a 330-second watch saw no public connections from any lab container.
+
 ## Other agents (Codex, Gemini CLI, Grok Build)
 
 - **Gemini CLI 0.68.0 cuts `mcp add -e` values at the second `=`.** Its code does `const [key, value] = curr.split("=")`. An NWC connection string has `relay=` and `secret=`, so only 92 of its 184 characters were saved, and the wallet's MCP server stopped with `No relay URL found in connection string`. `gemini mcp list` showed only `Disconnected`. `just lab1-mcp gemini` writes `~/.gemini/settings.json` directly instead. Codex and Grok Build saved the full value.

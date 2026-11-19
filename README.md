@@ -8,11 +8,22 @@ You do not need to be a software engineer. You build with your own coding agent,
 
 - Docker Desktop, or Docker Engine with Compose v2
 - git
-- Node.js 20 or newer
+- Node.js 22 or newer
 - [just](https://just.systems), a command runner. On a Mac: `brew install just`. On Linux or WSL: see https://just.systems/man/en/packages.html
 - your coding agent. The labs use Claude Code. With ChatGPT, Gemini or Grok, read [Following the labs with another agent](docs/other-agents.md)
 
 On Windows, run everything inside WSL 2.
+
+## Look before you install
+
+Nothing on this list is installed for you. To see what the labs would download and change, without changing anything:
+
+```bash
+just doctor      # what you have, free disk, busy ports
+just plan lab1   # what "just up-lab1" would download and write
+```
+
+[What gets installed](docs/what-gets-installed.md) lists every image, package and port, who publishes each one, and how to use your own. `just uninstall` removes it all at the end.
 
 ## How to start
 
@@ -56,6 +67,7 @@ Read [docs/security.md](docs/security.md). The main rule: API keys and NWC conne
 - [Versions](docs/VERSIONS.md)
 - [Gotchas](docs/GOTCHAS.md)
 - [Following the labs with another agent](docs/other-agents.md)
+- [What gets installed](docs/what-gets-installed.md)
 
 ## License
 

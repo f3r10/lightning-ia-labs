@@ -14,6 +14,38 @@ lab2 := "docker compose -f " + lab2_dir + "/docker-compose.yml"
 default:
     @just --list --unsorted
 
+# ---- Before you install: look first, and remove it all later ----
+
+# Read-only: show what is installed, free disk space and busy ports
+[group('setup')]
+doctor:
+    @node infra/tools.mjs doctor
+
+# Read-only: what a lab would download and write. Example: just plan lab1 (regtest, lab1, lab2, lab2b)
+[group('setup')]
+plan lab="lab1":
+    @node infra/tools.mjs plan "{{lab}}"
+
+# Remove everything the labs added. Without "yes" it only shows the list. Example: just uninstall yes
+[group('setup')]
+uninstall confirm="":
+    @node infra/tools.mjs uninstall "{{confirm}}"
+
+# Read-only: report any connection from the lab containers to the internet. Example: just netwatch 120
+[group('setup')]
+netwatch seconds="60":
+    @infra/netwatch.sh "{{seconds}}"
+
+# Update the generated part of docs/what-gets-installed.md
+[group('setup')]
+inventory:
+    @node infra/tools.mjs inventory
+
+# Fail if docs/what-gets-installed.md is out of date (used by CI)
+[group('setup')]
+check-inventory:
+    @node infra/tools.mjs inventory --check
+
 # ---- Shared regtest stack ----
 
 # Start bitcoind, two Lightning nodes and the relay, with an open channel
@@ -74,7 +106,7 @@ decode invoice:
 # Start the Lab 1 wallet
 [group('lab 1')]
 up-lab1: up
-    @cd {{lab1_dir}} && npm ci --no-audit --no-fund --silent
+    @cd {{lab1_dir}} && npm ci --ignore-scripts --no-audit --no-fund --silent
     @{{lab1}} up -d
     @node {{lab1_dir}}/scripts/setup.mjs
 
@@ -95,13 +127,13 @@ lab1-invoices:
 
 # Connect the wallet to Claude Code. Example: just lab1-mcp-claude-code alby-live
 [group('lab 1')]
-lab1-mcp-claude-code name="alby-lab1":
-    @node {{lab1_dir}}/scripts/connect-mcp.mjs claude-code "{{name}}"
+lab1-mcp-claude-code name="alby-lab1" scope="user":
+    @node {{lab1_dir}}/scripts/connect-mcp.mjs claude-code "{{name}}" "{{scope}}"
 
-# Connect the wallet to another agent: codex, gemini or grok. Example: just lab1-mcp codex
+# Connect the wallet to an agent: claude-code, codex, gemini or grok. Example: just lab1-mcp codex alby-lab1 user
 [group('lab 1')]
-lab1-mcp agent name="alby-lab1":
-    @node {{lab1_dir}}/scripts/connect-mcp.mjs "{{agent}}" "{{name}}"
+lab1-mcp agent name="alby-lab1" scope="user":
+    @node {{lab1_dir}}/scripts/connect-mcp.mjs "{{agent}}" "{{name}}" "{{scope}}"
 
 # Write an MCP config file for Claude Desktop or another client
 [group('lab 1')]

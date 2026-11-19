@@ -27,6 +27,9 @@ await lnbits.request("POST", "/nwcprovider/api/v1/config", {
 });
 await lnbits.restartExtension(NWC_EXTENSION.id);
 
+// From now on, LNbits does not call outside services by itself. See docs/what-gets-installed.md.
+await lnbits.stayOffline();
+
 const wallet = await lnbits.findOrCreateWallet(WALLET_NAME);
 if ((await lnbits.balanceSats(wallet)) < WALLET_SATS) {
   // Real funding over the Lightning channel: the shop node pays an invoice from this wallet.

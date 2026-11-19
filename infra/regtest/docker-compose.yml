@@ -1,9 +1,10 @@
 # Shared regtest stack for all labs. Regtest is a private test network: its coins have no value.
 # Images are pinned by tag and digest. See docs/VERSIONS.md.
+# To use an image you built or verified yourself, set LNLABS_*_IMAGE. See docs/what-gets-installed.md.
 name: lnlabs
 
 x-lnd: &lnd
-  image: lightninglabs/lnd:v0.21.6-beta@sha256:54b3c87ad0bc3fea3fab8af23ace6421147ea97e6b56bf3911592d7853c185b8
+  image: ${LNLABS_LND_IMAGE:-lightninglabs/lnd:v0.21.6-beta@sha256:54b3c87ad0bc3fea3fab8af23ace6421147ea97e6b56bf3911592d7853c185b8}
   restart: unless-stopped
   depends_on:
     bitcoind:
@@ -12,7 +13,7 @@ x-lnd: &lnd
 
 services:
   bitcoind:
-    image: bitcoin/bitcoin:31.2@sha256:e1311441eb589e69588060cc7cc0868bc999ab1f359160d7c31fd6d16862a92d
+    image: ${LNLABS_BITCOIND_IMAGE:-bitcoin/bitcoin:31.2@sha256:e1311441eb589e69588060cc7cc0868bc999ab1f359160d7c31fd6d16862a92d}
     restart: unless-stopped
     command:
       - -regtest=1
@@ -81,7 +82,7 @@ services:
 
   # A Nostr relay carries NWC messages between the agent and the wallet.
   relay:
-    image: dockurr/strfry:1.1.3@sha256:599ab3500dbfbe6cb78c668e1892cd9802c192d066df4660e8e3175034a8344d
+    image: ${LNLABS_RELAY_IMAGE:-dockurr/strfry:1.1.3@sha256:599ab3500dbfbe6cb78c668e1892cd9802c192d066df4660e8e3175034a8344d}
     restart: unless-stopped
     ports:
       - "127.0.0.1:7777:7777"

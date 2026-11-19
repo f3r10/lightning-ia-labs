@@ -14,7 +14,7 @@ The chat pages in a browser (chatgpt.com, gemini.google.com, grok.com) cannot do
 | Google, free or Google One | Antigravity CLI | see https://antigravity.google/docs | not tested |
 | Grok | Grok Build | `curl -fsSL https://x.ai/cli/install.sh \| bash` (see https://docs.x.ai/build/overview) | 1.0.70 |
 
-Run the agent once and sign in before class. Google says that on 2026-06-18, Antigravity CLI replaced Gemini CLI for unpaid and Google One accounts.
+Run the agent once and sign in before class. If an installer is a `curl ... | bash` command, you can download the script first, read it, then run it with `bash`. Google says that on 2026-06-18, Antigravity CLI replaced Gemini CLI for unpaid and Google One accounts.
 
 ## What stays the same
 

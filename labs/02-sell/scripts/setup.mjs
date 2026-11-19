@@ -23,6 +23,9 @@ for (const extension of EXTENSIONS) {
   console.log(`Extension ready: ${extension.id} ${extension.version}`);
 }
 
+// From now on, LNbits does not call outside services by itself. See docs/what-gets-installed.md.
+await lnbits.stayOffline();
+
 const wallet = await lnbits.findOrCreateWallet("shop-wallet");
 setEnv("LNBITS_INVOICE_KEY", wallet.inkey);
 

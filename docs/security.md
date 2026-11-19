@@ -36,3 +36,18 @@ A model can make mistakes or be tricked, for example by text in a web page it re
 - Use regtest, signet or mutinynet until your app works.
 - Mainnet steps in these labs are optional, and are marked clearly.
 - Mainnet payments are final. Use amounts that you can afford to lose.
+
+## 6. Where to run the labs
+
+The labs need no real wallet and no real key. Choose how much separation you want:
+
+- **Your usual computer.** Fine for regtest: its coins have no value, and every port listens on 127.0.0.1 only. Keep real wallets, seed phrases and hardware wallet software closed while you work.
+- **A separate user account.** Your agent and the lab files then cannot read your own files.
+- **A virtual machine.** The strongest separation. Install Docker, Node.js, just and your agent inside it.
+
+Wherever you run them:
+
+- Read what a command does before you run it: `just plan lab1`, `just --dry-run up-lab1`. See [what-gets-installed.md](what-gets-installed.md).
+- Do not let your agent approve its own actions (options such as "always approve" or "skip permissions"). Read each command it wants to run.
+- Your agent sends your prompts, and the files it reads, to its provider. Do not open files with real secrets in that session.
+- When you are done: `just uninstall`.

@@ -3,13 +3,12 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "dependencies": {
     "@getalby/mcp": "1.1.2",
     "@getalby/sdk": "9.0.0",
     "@modelcontextprotocol/sdk": "1.32.2",
-    "nostr-tools": "2.25.5",
-    "websocket-polyfill": "0.0.3"
+    "nostr-tools": "2.25.5"
   }
 }

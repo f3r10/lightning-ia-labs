@@ -1,5 +1,4 @@
 // Lab 1 check. It talks to the wallet and the shop node directly, never to the agent.
-import "websocket-polyfill";
 import { execSync } from "node:child_process";
 import { NWCClient } from "@getalby/sdk";
 import { getPublicKey } from "nostr-tools/pure";

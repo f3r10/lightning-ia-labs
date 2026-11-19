@@ -3,10 +3,14 @@ name: lnlabs-lab1
 
 services:
   lnbits-agent:
-    image: lnbits/lnbits:v1.6.2@sha256:284b9c2a0df9a1f867b4c52b694699fccade513c09368879922ff90bc7bf850e
+    image: ${LNLABS_LNBITS_IMAGE:-lnbits/lnbits:v1.6.2@sha256:284b9c2a0df9a1f867b4c52b694699fccade513c09368879922ff90bc7bf850e}
     restart: unless-stopped
     environment:
       LNBITS_ADMIN_UI: "true"
+      # No price lookups on outside services (exchange rates, price aggregator).
+      # The setup script also turns off the extension catalogs, after it installs the extensions.
+      LNBITS_PRICE_AGGREGATOR_ENABLED: "false"
+      LNBITS_EXCHANGE_RATE_PROVIDERS: "[]"
       AUTH_HTTPS_ONLY: "false"
       LNBITS_BACKEND_WALLET_CLASS: LndRestWallet
       LND_REST_ENDPOINT: https://lnd-customer:8080/

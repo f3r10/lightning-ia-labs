@@ -1,5 +1,6 @@
-// Lab 2a feature check. It tests the features of Prompts 3 to 7 from the outside,
-// like a customer with curl would. A feature you have not built yet shows NOT YET.
+// Lab 2a feature check. It tests the features of Prompts 3 to 7, and of the two
+// "your own prompt" exercises, from the outside, like a customer with curl would.
+// A feature you have not built yet shows NOT YET.
 import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,7 +9,7 @@ import { labFiles, lncli, pollUntil } from "../../../infra/lnbits/lab-common.mjs
 const { readEnv } = labFiles(join(dirname(fileURLToPath(import.meta.url)), ".."));
 const env = readEnv();
 const STORE = process.env.STORE_URL || env.STORE_URL;
-const only = process.argv[2]; // optional: qr, cart, receipt, kitchen or tips
+const only = process.argv[2]; // optional: qr, cart, receipt, kitchen, tips, discount or summary
 
 let failures = 0;
 const done = [];
@@ -156,6 +157,87 @@ if (!only || only === "tips") {
     else fail(`The store accepted these tips: ${accepted.join("; ")}.`, "Allow only whole numbers from 0 to a maximum, and check them on the server.");
   } else if (amount === null) notYet('POST /api/orders with {"item":"coffee","tipSats":100} did not create an order.');
   else fail(`A coffee with a 100-sat tip gave an invoice of ${amount} sats.`, `It should be ${coffee} + 100.`);
+}
+
+// Your own prompt 1 (step 12): a discount code. The README gives only the goal and the contract.
+// The rules your prompt had to include are tested here.
+if (!only || only === "discount") {
+  console.log("Discount code (your own prompt, step 12)");
+  const low = Math.floor(coffee * 0.9);
+  const high = Math.ceil(coffee * 0.9);
+  const discounted = (amount) => amount >= low && amount <= high;
+  const r = await api("POST", "/api/orders", { item: "coffee", code: "SATS10" });
+  const amount = created(r) ? amountOf(r.json.bolt11) : null;
+  if (amount === coffee) notYet('The code SATS10 ({"item":"coffee","code":"SATS10"}) did not change the invoice.');
+  else if (amount === null) notYet('POST /api/orders with {"item":"coffee","code":"SATS10"} did not create an order.');
+  else if (!discounted(amount)) fail(`With SATS10, a coffee of ${coffee} sats gave an invoice of ${amount} sats.`, `10% off ${coffee} is ${coffee * 0.9}, so the invoice should be ${low === high ? low : `${low} or ${high}`} sats.`);
+  else {
+    const before = failures;
+    pass(`With SATS10, the invoice is ${amount} sats instead of ${coffee}.`);
+    const wrong = await api("POST", "/api/orders", { item: "coffee", code: "FREE100" });
+    if (refused(wrong)) pass("An unknown code is refused with an error.");
+    else fail(`An unknown code got HTTP ${wrong.status}${wrong.json?.bolt11 ? `, with an invoice of ${amountOf(wrong.json.bolt11)} sats` : ""}.`, "Refuse an unknown code with HTTP 400, so the customer knows it did not work.");
+    // Rules the README did not write down.
+    const fake = await api("POST", "/api/orders", { item: "coffee", discount: 100, discountPercent: 100, discountSats: coffee, amountSats: 1, total: 1 });
+    if (refused(fake) || (created(fake) && amountOf(fake.json.bolt11) === coffee)) pass("A discount sent by the browser, without a code, is ignored.");
+    else fail(`Without a code, but with "discountPercent": 100 from the browser, the invoice was ${amountOf(fake.json.bolt11)} sats.`, "Only the server decides the discount, from the code.");
+    const twice = await api("POST", "/api/orders", { item: "coffee", code: ["SATS10", "SATS10"] });
+    if (refused(twice) || (created(twice) && amountOf(twice.json.bolt11) >= low)) pass("Sending the code twice does not give a bigger discount.");
+    else fail(`Sending ["SATS10","SATS10"] gave an invoice of ${amountOf(twice.json.bolt11)} sats.`, "Accept one code, as text, and refuse anything else.");
+    const page = await api("GET", "/");
+    const files = [page.text];
+    for (const m of page.text.matchAll(/<script[^>]+src=["']([^"']+)["']/g)) if (m[1].startsWith("/")) files.push((await api("GET", m[1])).text);
+    const products = await api("GET", "/api/products");
+    if (products.status === 200) files.push(products.text);
+    if (files.some((t) => /sats10/i.test(t))) fail("The code SATS10 appears in what the browser receives (the page, its scripts or /api/products).", "Keep the list of codes on the server. Anyone can read the page source.");
+    else pass("The code does not appear in the page, its scripts or the product list.");
+    if (failures === before) done.push("discount");
+  }
+}
+
+// Your own prompt 2 (step 13): the owner's sales summary.
+if (!only || only === "summary") {
+  console.log("Sales summary (your own prompt, step 13)");
+  const basic = (password) => ({ authorization: "Basic " + Buffer.from(`owner:${password}`).toString("base64") });
+  const open = await api("GET", "/api/summary");
+  if (open.status === 404) notYet("GET /api/summary answered 404.");
+  else if (open.status !== 401) fail(`GET /api/summary without a password answered HTTP ${open.status}.`, "Sales numbers are private. Ask for KITCHEN_PASSWORD, like the kitchen screen, and answer 401 without it.");
+  else {
+    const before = failures;
+    pass("The summary asks for a password.");
+    const wrong = await api("GET", "/api/summary", undefined, basic("wrong-password"));
+    if (wrong.status === 401) pass("A wrong password is refused.");
+    else fail(`A wrong password got HTTP ${wrong.status}.`, "Compare the password with KITCHEN_PASSWORD.");
+    const read = async () => {
+      const r = await api("GET", "/api/summary", undefined, basic(env.KITCHEN_PASSWORD));
+      return r.status === 200 && Number.isFinite(r.json?.orders) && Number.isFinite(r.json?.sats) ? r.json : null;
+    };
+    const start = await read();
+    if (!start) fail('With the right password, the summary did not answer {"orders": N, "sats": N}.', "Answer with JSON that has the numbers orders and sats.");
+    else {
+      // Two paid orders (one with a tip, if the store has tips), and one that nobody pays. Nobody opens their pages.
+      const a = await api("POST", "/api/orders", { item: "coffee" });
+      const b = await api("POST", "/api/orders", { item: "coffee", tipSats: 100 });
+      const unpaid = await api("POST", "/api/orders", { item: "coffee" });
+      const paidSats = amountOf(a.json.bolt11) + amountOf(b.json.bolt11);
+      if (!unpaid.json?.bolt11 || !pay(a.json.bolt11) || !pay(b.json.bolt11)) fail("The check could not create and pay its test orders.", "Run: just check-lab2");
+      else {
+        const end = await pollUntil("the summary to count 2 more orders", 20, async () => {
+          const now = await read();
+          return now && now.orders - start.orders >= 2 && now;
+        }).catch(() => null);
+        await new Promise((r) => setTimeout(r, 3000)); // give an unpaid order the chance to be counted by mistake
+        const last = (await read()) || end;
+        const orders = last ? last.orders - start.orders : 0;
+        const sats = last ? last.sats - start.sats : 0;
+        if (!end) fail("After 2 orders were paid, the summary did not count them within 20 seconds. Nobody opened their pages.", "Count orders that the server knows are paid; it must find paid orders by itself, like the kitchen screen.");
+        else if (orders > 2) fail(`The summary counted ${orders} new orders, but only 2 were paid. One more was created and not paid.`, "Count only paid orders.");
+        else if (sats !== paidSats) fail(`The summary added ${sats} sats, but the 2 paid invoices were ${paidSats} sats.`, "Add the amounts of the paid invoices, tips included.");
+        else pass(`2 paid orders added 2 orders and ${paidSats} sats to the summary. The unpaid order was not counted.`);
+      }
+    }
+    if (failures === before) done.push("summary");
+  }
 }
 
 console.log("");

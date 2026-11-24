@@ -191,7 +191,7 @@ lab2-fresh:
 check-lab2:
     @{{lab2_dir}}/check.sh
 
-# Check the features you added (Prompts 3 to 7). Example: just check-lab2-features, or just check-lab2-features cart
+# Check the features you added (steps 7 to 13). Example: just check-lab2-features, or just check-lab2-features cart
 [group('lab 2')]
 check-lab2-features feature="":
     @node {{lab2_dir}}/scripts/check-features.mjs {{feature}}

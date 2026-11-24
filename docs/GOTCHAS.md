@@ -56,6 +56,7 @@ The class creates the budget in Alby. For a path with no real money we need a wa
 
 - **Coding agents stop the store they started.** Claude Code stops a program it started in the background when the background time limit ends (10 minutes by default), or when the session closes. In our test, the agent restarted the store with a longer limit by itself. Students should run the store in their own terminal; step 2 of the Lab 2 README shows the command.
 - **Agents read the reference solution.** Before choosing a QR package, the agent read `solution/store/package.json`.
+- **A route name can give away a rule.** For the "write your own prompt" summary, the route was first `/api/kitchen/summary`. The agent reused the kitchen password just because of the name, so a prompt with no rules passed. With `/api/summary`, the same prompt left the sales public, and the check caught it.
 
 ## Lab 3a: Breez SDK and its test network
 

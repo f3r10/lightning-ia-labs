@@ -118,7 +118,7 @@ Your store works. Now make it better, one feature at a time, the way you would w
 - run `just check-lab2-features`. It tests the features from the outside, like a customer with `curl`. A feature you have not built yet shows `NOT YET`;
 - run `just check-lab2` again. It must still pass: a new feature must not break the old rules.
 
-In class, do steps 6, 7, 8 and 10. If you finish early, do steps 9 and 11. Your facilitator may choose differently.
+In class, do steps 6, 7, 8 and 10. If you finish early, do steps 9 and 11. Steps 12 and 13 have no prompt: you write it. Do them in class if there is time, or at home. Your facilitator may choose differently.
 
 6. **Make it yours.** Use [Prompt 2](#prompt-2-make-it-yours). Sell your own idea: your products, names and prices.
 
@@ -150,17 +150,51 @@ In class, do steps 6, 7, 8 and 10. If you finish early, do steps 9 and 11. Your 
 
     ✅ A coffee with a 100-sat tip gives an invoice of the coffee's price plus 100. `just check-lab2-features tips` shows `PASS`.
 
+### Write your own prompt
+
+In these two steps there is no prompt to copy. You get the goal, and the **contract**: the exact names the check uses. You write the prompt yourself.
+
+The check tests more than the contract. It also tests rules that a careful shop owner would think of, and that this page does not tell you. If the check shows `FAIL`, ask yourself: which rule did my prompt forget? Then improve **your prompt**, not only the code.
+
+Before you write, answer the questions under each step. Look at Prompts 3 to 7: their rules are a good start.
+
+12. **A discount code.** Customers who type the code `SATS10` get 10% off their order.
+
+    The contract:
+    - `POST /api/orders` accepts `"code"`, for example `{"item": "coffee", "code": "SATS10"}`.
+    - With `SATS10`, the invoice is 10% lower. An unknown code is refused with HTTP 400.
+    - The page has a field where the customer types the code.
+
+    Think first:
+    - Who calculates the new amount: the page, or the server? What if a customer sends their own discount with `curl`?
+    - Where does the list of valid codes live? Who can read it?
+    - What could a customer try, to get more than 10% off?
+
+    ✅ `just check-lab2-features discount` shows `PASS`. Write down which rules your first prompt forgot, if any.
+
+13. **Sales summary for the owner.** The owner wants to know how many orders were paid today, and how many sats came in.
+
+    The contract:
+    - `GET /api/summary` answers with JSON: `{"orders": N, "sats": N}`.
+
+    Think first:
+    - Which orders count: every order, or only some? What about an order nobody paid?
+    - Who should be able to see these numbers?
+    - The owner never opens the customers' pages. How does the server know an order was paid?
+
+    ✅ `just check-lab2-features summary` shows `PASS`. Write down which rules your first prompt forgot, if any.
+
 ### After class (optional)
 
-12. **Expired invoices.** Use [Prompt 8](#prompt-8-expired-invoices). Then ask your agent to restart your store with `ORDER_EXPIRY_SECS=30`. Buy something and wait 30 seconds without paying.
+14. **Expired invoices.** Use [Prompt 8](#prompt-8-expired-invoices). Then ask your agent to restart your store with `ORDER_EXPIRY_SECS=30`. Buy something and wait 30 seconds without paying.
 
     ✅ The page says the invoice expired, and offers a new one. `just pay` with the old invoice fails with `invoice expired`.
 
-13. **Orders that survive a restart.** Use [Prompt 9](#prompt-9-orders-that-survive-a-restart). Buy and pay something, then ask your agent to restart your store.
+15. **Orders that survive a restart.** Use [Prompt 9](#prompt-9-orders-that-survive-a-restart). Buy and pay something, then ask your agent to restart your store.
 
     ✅ After the restart, the order is still `paid`, and the kitchen screen still shows it.
 
-14. **A ready-made point of sale.** In LNbits, open the TPoS extension and create a terminal for `shop-wallet`. Open it, enter an amount, and pay the invoice with `just pay`. Compare it with your own store: what does each one do better?
+16. **A ready-made point of sale.** In LNbits, open the TPoS extension and create a terminal for `shop-wallet`. Open it, enter an amount, and pay the invoice with `just pay`. Compare it with your own store: what does each one do better?
 
     ✅ The terminal shows that the payment arrived.
 
@@ -214,7 +248,7 @@ Do this one last. Afterwards, small sales still work. `just reset` puts the chan
 
 ✅ You wrote the numbers from `just status` before and after, and what happened to each payment.
 
-**Q4. Restart the store.** Do this one before step 13. Create an order, pay it, and check that it shows `paid`. Then ask your agent to stop your store and start it again. For the reference store, run: `docker restart lnlabs-lab2-store-solution-1`. Ask for the same order:
+**Q4. Restart the store.** Do this one before step 15. Create an order, pay it, and check that it shows `paid`. Then ask your agent to stop your store and start it again. For the reference store, run: `docker restart lnlabs-lab2-store-solution-1`. Ask for the same order:
 
 ```bash
 curl -s http://127.0.0.1:3002/api/orders/PASTE_THE_ORDER_ID
@@ -434,16 +468,16 @@ Lab 2a check: selling with LNbits. Store address: http://127.0.0.1:3002
 RESULT: Lab 2a passed. Your store marks an order as paid only after the invoice settles, and the page has no key.
 ```
 
-For the features of steps 7 to 11:
+For the features of steps 7 to 13:
 
 ```bash
 just check-lab2-features          # all features
-just check-lab2-features cart     # only one: qr, cart, receipt, kitchen or tips
+just check-lab2-features cart     # only one: qr, cart, receipt, kitchen, tips, discount or summary
 ```
 
 It pays a few small orders from the customer node. A feature you have not built yet shows `NOT YET`, which is fine. A `FAIL` line is a problem to fix: give it to your agent.
 
-The reference solution is in `solution/store`. It has every feature of Prompts 1 to 8. To try it, stop your own store and run `just lab2-solution`. It uses the same port, 3002. Its kitchen screen is at http://127.0.0.1:3002/kitchen.
+The reference solution is in `solution/store`. It has every feature of Prompts 1 to 8. Steps 12 and 13 have no reference solution, on purpose: they are yours to design. To try it, stop your own store and run `just lab2-solution`. It uses the same port, 3002. Its kitchen screen is at http://127.0.0.1:3002/kitchen.
 
 ## To explore
 

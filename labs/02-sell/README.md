@@ -285,6 +285,7 @@ The reference solution is in `solution/store`. To try it, stop your own store an
 | --- | --- |
 | `Your store does not answer` | Start your store, or ask your agent to start it. Check that it uses port 3002. |
 | `address already in use` on port 3002 | Another store is running. Run `just down-lab2`, stop your own store, and try again. |
+| Your agent says `my-store` already exists | You built a store before. Run `just lab2-fresh` to start again with an empty folder. |
 | `The page source contains an LNbits key` | Move every LNbits call to your server. Then create a new wallet key, because the old one was exposed. |
 | `POST /api/orders did not work` | Your store does not follow the routes above. Give your agent the failure message. |
 | `The order did not become paid` | Your server must ask LNbits about the payment each time it reads an order. |
@@ -299,3 +300,11 @@ just reset       # delete all local test data
 ```
 
 Also stop your own store, if you started it. Your code in `my-store` stays on your disk.
+
+To do the lab again from the start:
+
+```bash
+just lab2-fresh   # stops your store, and moves my-store to old-stores/
+```
+
+It deletes nothing. Your old store stays in `labs/02-sell/old-stores/`.

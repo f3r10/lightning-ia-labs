@@ -8,6 +8,7 @@ node_modules/
 *.log
 .DS_Store
 labs/02-sell/my-store/
+labs/02-sell/old-stores/
 # What the helpers added to your agents (no secrets), for "just uninstall"
 .lnlabs/
 # MCP servers added with scope "project": they contain the wallet's connection string

@@ -179,6 +179,11 @@ lab2-solution:
 lab2-invoice amount="100" expiry="30":
     @node {{lab2_dir}}/scripts/make-invoice.mjs "{{amount}}" "{{expiry}}"
 
+# Start Lab 2a again: stop your store and move my-store to old-stores/ (deletes nothing)
+[group('lab 2')]
+lab2-fresh:
+    @node {{lab2_dir}}/scripts/fresh.mjs
+
 # Check whether Lab 2a worked
 [group('lab 2')]
 check-lab2:

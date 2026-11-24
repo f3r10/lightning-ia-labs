@@ -36,6 +36,8 @@ services:
     environment:
       LNBITS_URL: http://lnbits-shop:5000
       LNBITS_INVOICE_KEY: ${LNBITS_INVOICE_KEY:?Run just up-lab2 first}
+      KITCHEN_PASSWORD: ${KITCHEN_PASSWORD:-}
+      ORDER_EXPIRY_SECS: ${ORDER_EXPIRY_SECS:-600}
       PORT: "3002"
     ports:
       - "127.0.0.1:3002:3002"

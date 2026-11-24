@@ -50,9 +50,19 @@ const LABS = {
   lab2: {
     title: "Lab 2a: Sell with LNbits (just up-lab2)",
     compose: ["regtest", "lab2"],
-    npm: [],
-    writes: ["labs/02-sell/.env", "Docker volume lnlabs-lnbits-shop", "LNbits extensions tpos, events, inventory and orders, downloaded from GitHub into that volume"],
-    hosts: ["Docker Hub, to download the images", "github.com, once during setup, for the four LNbits extensions (exact release archives)"],
+    npm: ["labs/02-sell/solution/store"],
+    writes: [
+      "labs/02-sell/.env",
+      "Docker volume lnlabs-lnbits-shop",
+      "LNbits extensions tpos, events, inventory and orders, downloaded from GitHub into that volume",
+      "Only when you run just lab2-solution: labs/02-sell/solution/store/node_modules/ (the QR code package)",
+      "Only if your agent installs packages for your store: labs/02-sell/my-store/node_modules/",
+    ],
+    hosts: [
+      "Docker Hub, to download the images",
+      "github.com, once during setup, for the four LNbits extensions (exact release archives)",
+      "the npm registry, only when you run just lab2-solution, or when your agent installs a package",
+    ],
     accounts: [],
   },
   lab2b: {
@@ -292,7 +302,7 @@ function uninstall(confirm) {
     if (!imagePresent(img.ref)) continue;
     steps.push({ what: `Delete the image ${img.ref.split("@")[0]}`, do: () => runOrThrow("docker", ["image", "rm", img.ref]) });
   }
-  for (const dir of ["labs/01-agent-with-a-budget/node_modules", "labs/02-sell/solution/mdk-store/node_modules"]) {
+  for (const dir of ["labs/01-agent-with-a-budget/node_modules", "labs/02-sell/solution/store/node_modules", "labs/02-sell/solution/mdk-store/node_modules"]) {
     if (existsSync(join(ROOT, dir))) steps.push({ what: `Delete ${dir}`, do: () => rmSync(join(ROOT, dir), { recursive: true, force: true }) });
   }
   for (const a of readAdded()) {
@@ -361,7 +371,7 @@ function inventory(check) {
     }
   }
   lines.push("", "### npm packages", "");
-  for (const dir of ["labs/01-agent-with-a-budget", "labs/02-sell/solution/mdk-store"]) {
+  for (const dir of ["labs/01-agent-with-a-budget", "labs/02-sell/solution/store", "labs/02-sell/solution/mdk-store"]) {
     const s = lockSummary(dir);
     lines.push(`**${dir}**: ${s.count} packages, exact versions and integrity hashes in \`package-lock.json\`.`, "");
     lines.push(`- Direct dependencies: ${Object.entries(s.direct).map(([k, v]) => `\`${k}@${v}\``).join(", ")}`);

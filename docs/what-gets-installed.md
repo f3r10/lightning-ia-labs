@@ -155,6 +155,11 @@ Every port listens on 127.0.0.1 only, so other computers cannot reach it.
 - Direct dependencies: `@getalby/mcp@1.1.2`, `@getalby/sdk@9.0.0`, `@modelcontextprotocol/sdk@1.32.2`, `nostr-tools@2.25.5`
 - Install scripts: turned off by `.npmrc` (`ignore-scripts=true`). Packages that have one: `bufferutil`, `es5-ext`, `utf-8-validate`.
 
+**labs/02-sell/solution/store**: 29 packages, exact versions and integrity hashes in `package-lock.json`.
+
+- Direct dependencies: `qrcode@1.5.4`
+- Install scripts: turned off by `.npmrc` (`ignore-scripts=true`). Packages that have one: none.
+
 **labs/02-sell/solution/mdk-store**: 516 packages, exact versions and integrity hashes in `package-lock.json`.
 
 - Direct dependencies: `@moneydevkit/core@0.22.0`, `@moneydevkit/nextjs@0.22.0`, `next@16.4.5`, `react@19.3.0`, `react-dom@19.3.0`, `standardwebhooks@1.1.1`, `@types/node@20.19.43`, `@types/react@19.3.0`, `@types/react-dom@19.3.0`, `eslint@9.39.5`, `eslint-config-next@16.4.5`, `typescript@5.9.3`
@@ -176,8 +181,8 @@ Every port listens on 127.0.0.1 only, so other computers cannot reach it.
 
 **Lab 2a: Sell with LNbits (just up-lab2)**
 
-- Writes: labs/02-sell/.env; Docker volume lnlabs-lnbits-shop; LNbits extensions tpos, events, inventory and orders, downloaded from GitHub into that volume.
-- Connects to: Docker Hub, to download the images; github.com, once during setup, for the four LNbits extensions (exact release archives).
+- Writes: labs/02-sell/.env; Docker volume lnlabs-lnbits-shop; LNbits extensions tpos, events, inventory and orders, downloaded from GitHub into that volume; Only when you run just lab2-solution: labs/02-sell/solution/store/node_modules/ (the QR code package); Only if your agent installs packages for your store: labs/02-sell/my-store/node_modules/.
+- Connects to: Docker Hub, to download the images; github.com, once during setup, for the four LNbits extensions (exact release archives); the npm registry, only when you run just lab2-solution, or when your agent installs a package.
 - Accounts: none.
 
 **Lab 2b: Sell with moneydevkit (optional)**

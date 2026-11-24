@@ -1,6 +1,7 @@
 // Prepares the Lab 2 shop: LNbits account, selling extensions and a wallet.
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { randomBytes } from "node:crypto";
 import { LNbits } from "../../../infra/lnbits/lnbits-client.mjs";
 import { labFiles } from "../../../infra/lnbits/lab-common.mjs";
 
@@ -28,6 +29,10 @@ await lnbits.stayOffline();
 
 const wallet = await lnbits.findOrCreateWallet("shop-wallet");
 setEnv("LNBITS_INVOICE_KEY", wallet.inkey);
+// The kitchen screen's password (Prompt 6). Made once, and kept if you run setup again.
+if (!env.KITCHEN_PASSWORD || env.KITCHEN_PASSWORD === "change-me-regtest-only") {
+  setEnv("KITCHEN_PASSWORD", randomBytes(9).toString("hex"));
+}
 
 console.log('OK: the wallet "shop-wallet" is ready, and its invoice key is saved in labs/02-sell/.env');
 console.log(`Open LNbits at ${env.LNBITS_URL}`);

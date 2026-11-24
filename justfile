@@ -171,8 +171,10 @@ down-lab2:
 # Start the reference store on http://127.0.0.1:3002
 [group('lab 2')]
 lab2-solution:
+    @cd {{lab2_dir}}/solution/store && npm ci --ignore-scripts --no-audit --no-fund --silent
     @docker compose --env-file {{lab2_dir}}/.env -f {{lab2_dir}}/docker-compose.yml --profile solution up -d store-solution
     @echo "OK: the reference store is at http://127.0.0.1:3002"
+    @echo "    Kitchen screen: http://127.0.0.1:3002/kitchen (any user name; the password is KITCHEN_PASSWORD in labs/02-sell/.env)"
 
 # Create a shop-wallet invoice that expires soon. Example: just lab2-invoice 100 30
 [group('lab 2')]
@@ -188,6 +190,11 @@ lab2-fresh:
 [group('lab 2')]
 check-lab2:
     @{{lab2_dir}}/check.sh
+
+# Check the features you added (Prompts 3 to 7). Example: just check-lab2-features, or just check-lab2-features cart
+[group('lab 2')]
+check-lab2-features feature="":
+    @node {{lab2_dir}}/scripts/check-features.mjs {{feature}}
 
 # Check your deployed moneydevkit store. Example: just check-lab2b https://you.vercel.app path/.env.local
 [group('lab 2')]

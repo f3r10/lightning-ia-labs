@@ -6,39 +6,91 @@
 <title>Lab Store</title>
 <style>
   body { font-family: system-ui, sans-serif; max-width: 34rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
-  button { padding: .5rem 1rem; margin-right: .5rem; cursor: pointer; }
-  textarea { width: 100%; height: 7rem; font-family: monospace; }
+  button, .button { padding: .5rem 1rem; margin: .2rem .5rem .2rem 0; cursor: pointer; font-size: 1rem; }
+  .product { display: flex; justify-content: space-between; align-items: center; padding: .4rem 0; border-bottom: 1px solid #ddd; }
+  .product input { width: 4rem; }
+  textarea { width: 100%; height: 6rem; font-family: monospace; }
+  #qr img { width: 16rem; max-width: 100%; }
   #status { font-weight: 700; }
+  .paid { color: #087f23; }
+  .expired { color: #b00020; }
+  .receipt { border: 2px dashed #087f23; padding: 1rem; margin-top: 1rem; }
+  .proof { font-family: monospace; font-size: .8rem; word-break: break-all; }
 </style>
 </head>
 <body>
 <h1>Lab Store</h1>
-<p>Choose a product. Your order is paid only when the invoice settles.</p>
-<div id="products"></div>
+<p>Choose your products. Your order is paid only when the invoice settles.</p>
+
+<section id="shop">
+  <div id="products"></div>
+  <p>Tip:
+    <select id="tip">
+      <option value="0">No tip</option>
+      <option value="50">50 sats</option>
+      <option value="100">100 sats</option>
+      <option value="250">250 sats</option>
+    </select>
+  </p>
+  <p>Total: <strong id="total">0</strong> sats</p>
+  <button id="buy">Pay with Lightning</button>
+  <p id="error" class="expired"></p>
+</section>
+
 <section id="order" hidden>
   <h2>Your order</h2>
-  <p>Amount: <span id="amount"></span> sats</p>
-  <p>Status: <span id="status"></span></p>
-  <label for="invoice">Invoice</label>
-  <textarea id="invoice" readonly></textarea>
+  <p>Amount: <span id="amount"></span> sats. Status: <span id="status"></span></p>
+  <div id="pay">
+    <div id="qr"></div>
+    <a id="wallet-link" class="button" href="#">Open in my wallet</a>
+    <button id="copy">Copy invoice</button>
+    <textarea id="invoice" readonly></textarea>
+  </div>
+  <div id="expired" hidden>
+    <p class="expired">This invoice expired. Prices are checked again for a new one.</p>
+    <button id="again">Get a new invoice</button>
+  </div>
+  <div id="receipt" class="receipt" hidden></div>
 </section>
+
 <script>
 const $ = (id) => document.getElementById(id);
+let products = {};
 let timer;
+let lastCart;
 
-async function buy(item) {
+function cart() {
+  const items = [];
+  for (const [item, product] of Object.entries(products)) {
+    const quantity = Number($(`qty-${item}`).value);
+    if (quantity > 0) items.push({ item, quantity });
+  }
+  return { items, tipSats: Number($("tip").value) };
+}
+
+// The page shows a total, but only to help. The server computes the real amount.
+function updateTotal() {
+  const { items, tipSats } = cart();
+  $("total").textContent = items.reduce((sum, l) => sum + products[l.item].priceSats * l.quantity, 0) + tipSats;
+}
+
+async function buy(body) {
   clearInterval(timer);
+  $("error").textContent = "";
   const res = await fetch("/api/orders", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ item }),
+    body: JSON.stringify(body),
   });
   const order = await res.json();
+  if (!res.ok) { $("error").textContent = order.error; return; }
+  lastCart = body;
+  $("qr").innerHTML = `<img alt="QR code of the invoice" src="/api/orders/${order.id}/qr.svg">`;
   show(order);
   timer = setInterval(async () => {
     const latest = await (await fetch(`/api/orders/${order.id}`)).json();
     show(latest);
-    if (latest.status === "paid") clearInterval(timer);
+    if (latest.status !== "pending") clearInterval(timer);
   }, 1000);
 }
 
@@ -46,16 +98,50 @@ function show(order) {
   $("order").hidden = false;
   $("amount").textContent = order.amountSats;
   $("status").textContent = order.status;
+  $("status").className = order.status;
   $("invoice").value = order.bolt11;
+  $("wallet-link").href = `lightning:${order.bolt11}`;
+  $("pay").hidden = order.status !== "pending";
+  $("expired").hidden = order.status !== "expired";
+  $("receipt").hidden = order.status !== "paid";
+  if (order.status === "paid") showReceipt(order);
 }
 
-fetch("/api/products").then((r) => r.json()).then((products) => {
+function showReceipt(order) {
+  const r = $("receipt");
+  r.replaceChildren();
+  const add = (tag, text, cls) => { const el = document.createElement(tag); el.textContent = text; if (cls) el.className = cls; r.append(el); };
+  add("h3", "Receipt");
+  for (const l of order.lines) add("div", `${l.quantity} x ${l.name}: ${l.quantity * l.priceSats} sats`);
+  if (order.tipSats) add("div", `Tip: ${order.tipSats} sats`);
+  add("p", `Total paid: ${order.amountSats} sats, on ${new Date(order.paidAt).toLocaleString()}`);
+  add("div", "Payment proof (preimage):");
+  add("div", order.preimage, "proof");
+  add("div", "Payment hash:");
+  add("div", order.paymentHash, "proof");
+  add("p", "Only the person who was paid can reveal the preimage. Its SHA-256 hash is the payment hash.");
+}
+
+$("buy").onclick = () => buy(cart());
+$("again").onclick = () => buy(lastCart);
+$("copy").onclick = () => navigator.clipboard.writeText($("invoice").value);
+$("tip").onchange = updateTotal;
+
+fetch("/api/products").then((r) => r.json()).then((list) => {
+  products = list;
   for (const [id, product] of Object.entries(products)) {
-    const button = document.createElement("button");
-    button.textContent = `${product.name}: ${product.priceSats} sats`;
-    button.onclick = () => buy(id);
-    $("products").append(button);
+    const row = document.createElement("div");
+    row.className = "product";
+    const label = document.createElement("label");
+    label.htmlFor = `qty-${id}`;
+    label.textContent = `${product.name}: ${product.priceSats} sats`;
+    const input = document.createElement("input");
+    Object.assign(input, { id: `qty-${id}`, type: "number", min: 0, max: 20, step: 1, value: id === "coffee" ? 1 : 0 });
+    input.oninput = updateTotal;
+    row.append(label, input);
+    $("products").append(row);
   }
+  updateTotal();
 });
 </script>
 </body>

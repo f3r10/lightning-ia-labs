@@ -56,7 +56,7 @@ After you connect it, restart the agent or open a new session.
 
 ## Expect different answers
 
-Each model reasons in its own way. In the "Think about it" exercises, your agent may not do what the README describes for Claude. For example, it may obey the invoice in Lab 1 step 9, or trust a price from the browser in Lab 2 step 8. That is not a reason to stop. Write down what happened and bring it to class. The wallet's budget and the checks still work the same with every agent, because they never trust the model.
+Each model reasons in its own way. In the "Think about it" exercises, your agent may not do what the README describes for Claude. For example, it may obey the invoice in Lab 1 step 9, or trust a price from the browser in the Lab 2 cart (step 8). That is not a reason to stop. Write down what happened and bring it to class. The wallet's budget and the checks still work the same with every agent, because they never trust the model.
 
 ## What we tested (2026-11-17)
 

@@ -52,6 +52,11 @@ The class creates the budget in Alby. For a path with no real money we need a wa
 - **moneydevkit uses LSPS4 with its own LSP (checked in code).** `@moneydevkit/lightning-js` (0.1.87, the version `@moneydevkit/nextjs` 0.22.0 installs) builds its forked ldk-node with `set_liquidity_source_lsps4`, and creates invoices with `receive_via_lsps4_jit_channel`. The LSP is `lsp.moneydevkit.com:9735` on mainnet and `lsp.staging.moneydevkit.com:9735` on signet. The student configures nothing for liquidity; signet staging only needs `MDK_LSP_NODE_ID` and `MDK_LSP_ADDRESS`. A background task moves idle on-chain funds into the largest LSP channel after one channel closes and a new one opens.
 - **The only public LSPS4 document is a draft,** the "Ephemeral SCIDs" page in `ZmnSCPxj-jr/lsp`.
 
+## Lab 2a: building features with an agent (tested 2026-11-24)
+
+- **Coding agents stop the store they started.** Claude Code stops a program it started in the background when the background time limit ends (10 minutes by default), or when the session closes. In our test, the agent restarted the store with a longer limit by itself. Students should run the store in their own terminal; step 2 of the Lab 2 README shows the command.
+- **Agents read the reference solution.** Before choosing a QR package, the agent read `solution/store/package.json`.
+
 ## Lab 3a: Breez SDK and its test network
 
 - **Breez's regtest has no Lightning.** It is run by Lightspark, free, and needs no API key. Breez's testing guide says to test Lightning send and receive on mainnet with small amounts. So Lab 3a receives test sats on regtest, and Lightning receive is an optional mainnet step.
@@ -92,6 +97,7 @@ The class creates the budget in Alby. For a path with no real money we need a wa
 ## Testing with `claude -p`
 
 - **`claude -p` can stay attached to a server that the agent started.** The store worked after about 30 seconds, but the command did not return. This affected only our automated test.
+- **It waits up to the background time limit (10 minutes).** It returns only when Claude Code's background limit stops the agent's store. `CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=5000` did not change this in Claude Code 2.1.331. What worked: `--append-system-prompt` telling the agent that a script starts the store, so it stops its own copy before it finishes. The student prompts stay unchanged.
 
 ## Lab 4 warning (found during Lab 1 research)
 

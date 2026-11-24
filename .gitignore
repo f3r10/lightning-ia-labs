@@ -21,3 +21,7 @@ labs/*/solutions.md
 
 # Slide briefs for the course slides: kept local only
 docs/slide-briefs/
+# Your own just recipes (see the justfile)
+local.just
+# Claude Code settings for this computer only
+.claude/settings.local.json

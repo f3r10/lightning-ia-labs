@@ -146,6 +146,8 @@ In class, do steps 6, 7, 8 and 10. If you finish early, do steps 9 and 11. Steps
 
     ✅ The order appears on the kitchen screen by itself. `just check-lab2-features kitchen` shows `PASS`.
 
+    Shortcut: `just lab2-buy` buys a coffee and pays it from the customer node, without opening any page. Try it with the kitchen screen open.
+
 11. **Tips** (if you finish early). Use [Prompt 7](#prompt-7-tips).
 
     ✅ A coffee with a 100-sat tip gives an invoice of the coffee's price plus 100. `just check-lab2-features tips` shows `PASS`.

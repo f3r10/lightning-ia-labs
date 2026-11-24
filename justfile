@@ -9,6 +9,9 @@ lab1 := "docker compose -f " + lab1_dir + "/docker-compose.yml"
 lab2_dir := "labs/02-sell"
 lab2 := "docker compose -f " + lab2_dir + "/docker-compose.yml"
 
+# Your own recipes, for example a facilitator's demo helpers. local.just is not in git.
+import? 'local.just'
+
 # Show every command
 [private]
 default:
@@ -180,6 +183,11 @@ lab2-solution:
 [group('lab 2')]
 lab2-invoice amount="100" expiry="30":
     @node {{lab2_dir}}/scripts/make-invoice.mjs "{{amount}}" "{{expiry}}"
+
+# Buy from your store and pay it as the customer. Example: just lab2-buy, or just lab2-buy sticker
+[group('lab 2')]
+lab2-buy item="coffee":
+    @node {{lab2_dir}}/scripts/buy.mjs "{{item}}"
 
 # Start Lab 2a again: stop your store and move my-store to old-stores/ (deletes nothing)
 [group('lab 2')]

@@ -21,7 +21,7 @@ Browser -> your store on Vercel -> moneydevkit (checkout) -> your own Lightning 
 Some words used in this guide:
 
 - **Environment variable:** a value that your app reads on the server. Secrets go here, never in the page.
-- **Signet staging:** moneydevkit's test environment. It runs on MutinyNet, a public test network whose coins have no value.
+- **Mainnet:** the real Bitcoin network. This lab runs on mainnet, so your store's node holds real sats. You do not need to pay anything to finish the lab.
 - **Deploy:** publish a new version of your app on Vercel.
 
 ## Before class
@@ -45,10 +45,10 @@ Do these steps at home. Together they take about 20 minutes, mostly waiting for 
 
    ✅ The last lines show an address like `https://my-store-abc.vercel.app`. Write down the shortest one. This is **YOUR_URL**.
 
-4. **Get moneydevkit credentials for signet staging.** Replace YOUR_URL:
+4. **Get moneydevkit credentials.** Replace YOUR_URL, and paste the command as one line:
 
    ```bash
-   npx @moneydevkit/create@0.22.0 --base-url https://staging.moneydevkit.com --webhook-url YOUR_URL --env-target .env.local --no-clipboard
+   npx @moneydevkit/create@0.22.0 --webhook-url YOUR_URL --env-target .env.local --no-clipboard
    ```
 
    A browser page opens. Sign in and click **Authorize**.
@@ -57,11 +57,9 @@ Do these steps at home. Together they take about 20 minutes, mostly waiting for 
 
    Two known problems with version 0.22.0:
    - It copies your secrets to the clipboard even with `--no-clipboard`. Copy any other text afterwards to clear it.
-   - It may print `Next.js scaffolding failed`. That is fine: your agent adds those files in class.
+   - It may print `Next.js scaffolding failed`, or it may add `@moneydevkit/nextjs` and change `next.config.ts`. Both are fine: your agent sets up those files, with exact versions, in class.
 
-5. **Add the staging settings.** Copy the lines under "Signet staging only" from [solution/mdk-store/.env.example](solution/mdk-store/.env.example) to the end of your `.env.local`.
-
-6. **Back up your seed phrase.** `MDK_MNEMONIC` controls your node's funds. Never paste it into a chat, a page or a commit.
+5. **Back up your seed phrase.** `MDK_MNEMONIC` controls your node's funds, which are real sats. Never paste it into a chat, a page or a commit.
 
 ## Start
 
@@ -75,7 +73,7 @@ git check-ignore .env.local
 
 ## Steps
 
-In our test (2026-11-07), a real agent followed prompts 1 to 3 in about 4 minutes in total: 102 seconds to build, 79 to publish and 29 to deploy again. The dashboard step and a purchase add a few more minutes, so this fits the 27-minute build segment, as long as the before-class steps are done.
+In our test (2026-11-07), a real agent followed prompts 1 to 3 in about 4 minutes in total: 102 seconds to build, 79 to publish and 29 to deploy again. A purchase adds a minute or two, and the optional webhook step a few more, so this fits the 27-minute build segment, as long as the before-class steps are done.
 
 1. **Build the store.** Use [Prompt 1: build the store](#prompt-1-build-the-store).
 
@@ -83,22 +81,13 @@ In our test (2026-11-07), a real agent followed prompts 1 to 3 in about 4 minute
 
 2. **Publish it.** Use [Prompt 2: publish on Vercel](#prompt-2-publish-on-vercel).
 
-   ✅ YOUR_URL shows your store. The agent reports HTTP 200 for "/". A 500 from `/api/webhooks/mdk` is expected now: its secret comes in the next step.
+   ✅ YOUR_URL shows your store. The agent reports HTTP 200 for "/". A 500 from `/api/webhooks/mdk` is expected: its secret comes only in the optional step 5.
 
-3. **Connect the webhook.** You do this step, not the agent. In the moneydevkit staging dashboard (https://staging.moneydevkit.com), open your app:
-   - Check that the app's webhook address is YOUR_URL, without anything after it.
-   - Under Webhooks, add the endpoint `YOUR_URL/api/webhooks/mdk` for the event `checkout.completed`.
-   - Copy its signing secret (it starts with `whsec_`). In Vercel, open your project, then Settings, then Environment Variables. Add `MDK_WEBHOOK_SECRET` with that value, for Production.
+3. **Buy something.** Open YOUR_URL, click Buy, and look at the checkout page.
 
-   Then use [Prompt 3: deploy again after the secret](#prompt-3-deploy-again-after-the-secret).
+   ✅ You see a Lightning invoice that starts with `lnbc`, and the order status is `pending`.
 
-   ✅ The agent reports that the webhook answers `401 Invalid signature` to an unsigned message.
-
-4. **Buy something.** Open YOUR_URL, click Buy, and look at the checkout page.
-
-   ✅ You see a Lightning invoice that starts with `lntbs`, and the order status is `pending`.
-
-5. **Run the check.**
+4. **Run the check.**
 
    ```bash
    just check-lab2b YOUR_URL /full/path/to/my-store/.env.local
@@ -106,9 +95,13 @@ In our test (2026-11-07), a real agent followed prompts 1 to 3 in about 4 minute
 
    Run it from the `lightning-ia-labs` folder. ✅ The last line starts with `RESULT: Lab 2b passed.` If a line says FAIL, give that line and its "What to do" line to your agent, and ask it to fix the store and deploy again.
 
-6. **Optional: pay.** Pay the invoice from the MutinyNet faucet, https://faucet.mutinynet.com (it asks you to sign in with GitHub).
+5. **Optional: connect the webhook.** Your store does not need it: the order status comes from moneydevkit. The webhook lets moneydevkit tell your server "this order was paid", for example to send an email. You do this step, not the agent, because the signing secret comes from the dashboard. If your dashboard has a Webhooks section for your app:
+   - Add the endpoint `YOUR_URL/api/webhooks/mdk` for the event `checkout.completed`.
+   - Copy its signing secret (it starts with `whsec_`). In Vercel, open your project, then Settings, then Environment Variables. Add `MDK_WEBHOOK_SECRET` with that value, for Production.
 
-   **Known problem (tested on 2026-11-07):** on signet staging, the faucet's payment failed with `FailureReasonNoRoute`, twice. Our store had already registered with moneydevkit's staging LSP through LSPS4, as its logs show. But when the payment came, the LSP never called our store to open the channel. The problem is between the faucet and moneydevkit's staging LSP, outside your app. On mainnet, moneydevkit uses a different LSP. We did not test mainnet in this lab.
+   Then use [Prompt 3: deploy again after the secret](#prompt-3-deploy-again-after-the-secret).
+
+   ✅ The agent reports that the webhook answers `401 Invalid signature` to an unsigned message.
 
 ## Prompts for your agent
 
@@ -147,7 +140,7 @@ Do not change any code in this step.
 
 ### Prompt 3: deploy again after the secret
 
-Use it after you add `MDK_WEBHOOK_SECRET` in Vercel (step 3).
+Use it after you add `MDK_WEBHOOK_SECRET` in Vercel (optional step 5).
 
 ```text
 I added MDK_WEBHOOK_SECRET in Vercel. Deploy to production again with npx vercel@65.12.1 deploy --prod --yes.
@@ -179,12 +172,12 @@ Lab 2b check: moneydevkit store at YOUR_URL
   PASS  A new order is pending before anyone pays. Its status comes from moneydevkit.
   PASS  An unknown order is not found.
 
-  NOTE  This check does not pay. On signet staging, payments from the MutinyNet faucet failed with NoRoute in our tests (see the README).
+  NOTE  This check does not pay.
 
 RESULT: Lab 2b passed. Your store is deployed, keeps its secrets on the server, and only moneydevkit can mark an order as paid.
 ```
 
-The number of script files can be different. The reference solution is in [solution/mdk-store](solution/mdk-store).
+The number of script files can be different. Without the optional webhook step, the webhook line says "(it has no signing secret yet)" and a NOTE reminds you of step 5. The reference solution is in [solution/mdk-store](solution/mdk-store).
 
 ## If something fails
 
@@ -194,8 +187,7 @@ The number of script files can be different. The reference solution is in [solut
 | `Error occurred prerendering page "/checkout/[id]"` during the build | Put the component that reads `params` inside `<Suspense>`. |
 | `MDK_WEBHOOK_SECRET is not set` after you added it | Deploy again. Vercel only reads new variables on a new deployment. |
 | Your store page answers 401 | You opened a preview address. Use the production address. |
-| `FailureReasonNoRoute` when you pay on staging | This is the known staging problem from step 6. Your store is fine. |
-| `Maximum 10 apps per organization` during step 4 of Before class | Delete old apps in the staging dashboard. |
+| `Maximum 10 apps per organization` during step 4 of Before class | Delete old apps in the moneydevkit dashboard. |
 
 ## Clean up
 

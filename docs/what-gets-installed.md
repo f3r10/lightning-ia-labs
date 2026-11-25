@@ -188,8 +188,8 @@ Every port listens on 127.0.0.1 only, so other computers cannot reach it.
 **Lab 2b: Sell with moneydevkit (optional)**
 
 - Writes: your own my-store folder, outside this repository; my-store/.env.local, with your moneydevkit secrets.
-- Connects to: the npm registry; moneydevkit staging (staging.moneydevkit.com) and its Lightning service provider; Vercel.
+- Connects to: the npm registry; moneydevkit (moneydevkit.com) and its Lightning service provider, on mainnet; Vercel.
 - Runs with npx: `create-next-app@16.4.5`, `vercel@65.12.1`, `@moneydevkit/create@0.22.0`.
-- Accounts: Vercel (free account); moneydevkit (account on its signet staging service).
+- Accounts: Vercel (free account); moneydevkit (free account).
 
 <!-- inventory:end -->

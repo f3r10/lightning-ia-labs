@@ -13,6 +13,7 @@ if (!/^https?:\/\//.test(STORE)) {
   process.exit(1);
 }
 console.log(`Lab 2b check: moneydevkit store at ${STORE}\n`);
+const notes = [];
 
 // Secret values to look for in the page, if you give the check your .env.local.
 const secrets = [];
@@ -61,7 +62,10 @@ const fake = await get("/api/webhooks/mdk", {
   body: JSON.stringify({ type: "checkout.completed", data: { amountSats: 500 } }),
 });
 if (fake.status === 401) pass("The webhook refuses a fake checkout.completed without a valid signature.");
-else if (fake.status === 500 && /MDK_WEBHOOK_SECRET/.test(fake.text)) fail("The webhook has no signing secret.", "Add MDK_WEBHOOK_SECRET in Vercel (Settings, Environment Variables), then deploy again.");
+else if (fake.status === 500 && /secret/i.test(fake.text)) {
+  pass("The webhook refuses a fake checkout.completed (it has no signing secret yet).");
+  notes.push("The optional webhook step is not done: MDK_WEBHOOK_SECRET is not set. Your orders still work: their status comes from moneydevkit.");
+}
 else fail(`The webhook answered HTTP ${fake.status} to a fake, unsigned message.`, "Verify the signature with the standardwebhooks library before you trust the message.");
 
 // 4. A new checkout starts as pending, and the browser cannot change that.
@@ -93,8 +97,9 @@ if (created.status < 300 && checkoutId) {
   if (unknown.status === 404) pass("An unknown order is not found.");
   else fail(`An unknown order answered HTTP ${unknown.status}.`, "In app/api/orders/[id]/route.ts, if getCheckout throws for any reason, answer 404 with {\"error\": \"Unknown order\"}.");
 } else {
-  fail(`Creating a checkout failed: HTTP ${created.status} ${created.text.slice(0, 200)}`, "Check MDK_ACCESS_TOKEN, MDK_MNEMONIC and the staging variables in Vercel. Also check that your app's webhook address in the moneydevkit dashboard is your Vercel address.");
+  fail(`Creating a checkout failed: HTTP ${created.status} ${created.text.slice(0, 200)}`, "Check MDK_ACCESS_TOKEN and MDK_MNEMONIC in Vercel. Also check that your app's webhook address in the moneydevkit dashboard is your Vercel address.");
 }
 
-console.log("\n  NOTE  This check does not pay. On signet staging, payments from the MutinyNet faucet failed with NoRoute in our tests (see the README).");
+for (const note of notes) console.log(`\n  NOTE  ${note}`);
+console.log("\n  NOTE  This check does not pay.");
 finish();

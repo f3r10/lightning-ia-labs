@@ -70,8 +70,8 @@ const LABS = {
     compose: [],
     npm: ["labs/02-sell/solution/mdk-store"],
     writes: ["your own my-store folder, outside this repository", "my-store/.env.local, with your moneydevkit secrets"],
-    hosts: ["the npm registry", "moneydevkit staging (staging.moneydevkit.com) and its Lightning service provider", "Vercel"],
-    accounts: ["Vercel (free account)", "moneydevkit (account on its signet staging service)"],
+    hosts: ["the npm registry", "moneydevkit (moneydevkit.com) and its Lightning service provider, on mainnet", "Vercel"],
+    accounts: ["Vercel (free account)", "moneydevkit (free account)"],
     npx: ["create-next-app@16.4.5", "vercel@65.12.1", "@moneydevkit/create@0.22.0"],
   },
 };
